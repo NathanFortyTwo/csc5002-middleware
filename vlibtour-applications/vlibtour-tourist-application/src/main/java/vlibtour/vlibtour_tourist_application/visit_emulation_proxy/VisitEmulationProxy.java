@@ -1,0 +1,91 @@
+/**
+This file is part of the course CSC5002.
+
+Copyright (C) 2019-2023 Télécom SudParis
+
+This is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This software platform is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the muDEBS platform. If not, see <http://www.gnu.org/licenses/>.
+
+Initial developer(s): Chantal Taconet and Denis Conan
+Contributor(s):
+ */
+package vlibtour.vlibtour_tourist_application.visit_emulation_proxy;
+
+import vlibtour.vlibtour_common.Position;
+import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
+
+/**
+ * The REST Proxy (for clients) of the VLibTour Visit Emulation Server.
+ */
+public final class VisitEmulationProxy implements VisitEmulationService {
+	/**
+	 * constructs the REST proxy.
+	 */
+	public VisitEmulationProxy() {
+		throw new UnsupportedOperationException("Not implemented, yet");
+	}
+
+	/**
+	 * gets the position of the next POI to visit when arrived at the end of the
+	 * current path, that is the next POI in the visit. This position is the last
+	 * one of the current path.
+	 * 
+	 * @param user the identifier of the user.
+	 * @return the position of the current POI.
+	 */
+	public synchronized Position getNextPOIPosition(final String user) {
+		throw new UnsupportedOperationException("Not implemented, yet");
+	}
+
+	/**
+	 * gets the current position of a user.
+	 * 
+	 * @param user the identifier of the user.
+	 * @return the current position of the user.
+	 */
+	public synchronized Position getCurrentPosition(final String user) {
+		throw new UnsupportedOperationException("Not implemented, yet");
+	}
+
+	/**
+	 * steps to the next position in the current path. It returns the new position
+	 * of the user, or the same if the end of the path is already reached.
+	 * 
+	 * @param user the identifier of the user.
+	 * @return the new position of the user, or the same if the end of the path is
+	 *         already reached.
+	 */
+	public synchronized Position stepInCurrentPath(final String user) {
+		throw new UnsupportedOperationException("Not implemented, yet");
+	}
+
+	/**
+	 * when at a POI, steps in the visit---i.e. ask the visit emulation server for
+	 * the position to the next POI. If the current POI is the last one, i.e. the
+	 * user is already at the end of the visit, the position that is returned is the
+	 * position of the current POI.
+	 * 
+	 * @param user the identifier of the user.
+	 * @return the next position.
+	 */
+	public synchronized Position stepsInVisit(final String user) {
+		throw new UnsupportedOperationException("Not implemented, yet");
+	}
+
+	/**
+	 * closes the client.
+	 */
+	public void close() {
+		throw new UnsupportedOperationException("Not implemented, yet");
+	}
+}
