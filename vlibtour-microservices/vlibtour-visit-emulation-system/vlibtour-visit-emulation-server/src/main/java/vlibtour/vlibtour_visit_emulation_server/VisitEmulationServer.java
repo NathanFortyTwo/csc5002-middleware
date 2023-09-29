@@ -123,8 +123,8 @@ public final class VisitEmulationServer implements VisitEmulationService {
 		Set<String> group = null;
 		if (groupId.equals(ExampleOfAVisitWithTwoTourists.DALTON_GROUP_ID)) {
 			group = ExampleOfAVisitWithTwoTourists.DALTON_GROUP;
-			// TODO	
-			
+			group.stream().forEach(u -> GraphOfPositionsForEmulation.setStartingPosition(u,
+					ExampleOfAVisitWithTwoTourists.DEPARTURE_POSITION));
 		} else {
 			throw new IllegalArgumentException(
 					"For now, we only know the demo group (" + ExampleOfAVisitWithTwoTourists.DALTON_GROUP_ID + ")");
@@ -132,8 +132,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 		// set the visit and start the visit for the users
 		List<Position> visit = null;
 		if (tourId.equals(ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID)) {
-			// TODO	
-			
+			visit = ExampleOfAVisitWithTwoTourists.POI_POSITIONS_OF_DALTON_VISIT;
 			for (String user : group) {
 				visits.put(user, visit);
 			}
