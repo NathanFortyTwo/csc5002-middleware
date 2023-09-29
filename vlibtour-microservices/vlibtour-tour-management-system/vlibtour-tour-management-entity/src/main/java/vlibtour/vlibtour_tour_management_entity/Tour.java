@@ -22,7 +22,19 @@ Contributor(s):
 package vlibtour.vlibtour_tour_management_entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The entity bean defining a tour in the VLibTour case study. A tour is a
@@ -32,27 +44,100 @@ import java.util.List;
  * 
  * @author Denis Conan
  */
+@Entity
+@NamedQueries({
+		@NamedQuery(name = Tour.FIND_ALL, query = "SELECT t FROM Tour t"),
+		@NamedQuery(name = Tour.FIND_BY_ID, query = "SELECT t FROM Tour t WHERE t.id = :id")
+})
 public class Tour implements Serializable {
 	/**
 	 * the serial version UID.
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * gets the name of the tour.
-	 * 
-	 * @return the name of the tour.
-	 */
-	public String getName() {
-		throw new UnsupportedOperationException("Not implemented, yet.");
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@NotNull
+	private String name;
+
+	@NotNull
+	private String description;
+
+	@ManyToMany
+	@JoinTable(name = "tour_poi", joinColumns = @JoinColumn(name = "tour_id"), inverseJoinColumns = @JoinColumn(name = "poi_id"))
+	private List<POI> POIs;
+
+	// Constructors, getters, and setters
+
+	public Tour() {
+		POIs = new ArrayList<>();
 	}
 
-	/**
-	 * gets the sequence of POIs.
-	 * 
-	 * @return the sequence of POIs as a list.
-	 */
-	public List<POI> getPOIs() {
-		throw new UnsupportedOperationException("Not implemented, yet.");
+	public Tour(String name, String description) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("name cannot be null or empty");
+		}
+		if (description == null || description.isEmpty()) {
+			throw new IllegalArgumentException("description cannot be null or empty");
+		}
+		this.name = name;
+		this.description = description;
+		POIs = new ArrayList<>();
 	}
+
+	//#region
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("name cannot be null or empty");
+		}
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		if (description == null || description.isEmpty()) {
+			throw new IllegalArgumentException("description cannot be null or empty");
+		}
+		this.description = description;
+	}
+
+	public List<POI> getPOIs() {
+		return POIs;
+	}
+
+	public void setPOIs(List<POI> POIs) {
+		this.POIs = POIs;
+	}
+	//#endregion
+
+	@Override
+	public String toString() {
+		return "Tour{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", POIs=" + POIs +
+				'}';
+	}
+
+	// Named queries
+	public static final String FIND_ALL = "Tour.findAll";
+	public static final String FIND_BY_ID = "Tour.findById";
 }
