@@ -34,6 +34,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OrderColumn;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -68,6 +69,7 @@ public class Tour implements Serializable {
 
 	@ManyToMany
 	@JoinTable(name = "tour_poi", joinColumns = @JoinColumn(name = "tour_id"), inverseJoinColumns = @JoinColumn(name = "poi_id"))
+	@OrderColumn(name = "poi_order")
 	private List<POI> POIs;
 
 	// Constructors, getters, and setters
