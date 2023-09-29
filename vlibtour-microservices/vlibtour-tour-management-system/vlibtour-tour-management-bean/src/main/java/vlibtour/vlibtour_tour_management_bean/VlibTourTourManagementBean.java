@@ -37,7 +37,7 @@ import vlibtour.vlibtour_tour_management_entity.Tour;
  * 
  * @author Denis Conan
  */
-@Stateless
+@Stateless(name = "VlibTourTourManagementService")
 public class VlibTourTourManagementBean implements VlibTourTourManagementService {
     // connect to the jdbc database
     @PersistenceContext
@@ -82,6 +82,10 @@ public class VlibTourTourManagementBean implements VlibTourTourManagementService
 
     public List<Tour> getListTours() {
         return em.createNamedQuery(Tour.FIND_ALL, Tour.class).getResultList();
+    }
+
+    public List<POI> getListPOIsOfTour(Tour tour) {
+        return tour.getPOIs();
     }
 
 }
