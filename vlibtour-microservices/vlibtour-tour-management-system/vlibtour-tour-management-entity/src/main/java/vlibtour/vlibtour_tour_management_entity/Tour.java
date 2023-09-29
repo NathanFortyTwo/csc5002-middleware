@@ -47,7 +47,8 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
 		@NamedQuery(name = Tour.FIND_ALL, query = "SELECT t FROM Tour t"),
-		@NamedQuery(name = Tour.FIND_BY_ID, query = "SELECT t FROM Tour t WHERE t.id = :id")
+		@NamedQuery(name = Tour.FIND_BY_ID, query = "SELECT t FROM Tour t WHERE t.id = :id"),
+		@NamedQuery(name = Tour.FIND_BY_NAME, query = "SELECT t FROM Tour t WHERE t.name = :name")
 })
 public class Tour implements Serializable {
 	/**
@@ -140,4 +141,5 @@ public class Tour implements Serializable {
 	// Named queries
 	public static final String FIND_ALL = "Tour.findAll";
 	public static final String FIND_BY_ID = "Tour.findById";
+	public static final String FIND_BY_NAME = "Tour.findByName";
 }

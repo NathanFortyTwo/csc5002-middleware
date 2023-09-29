@@ -42,7 +42,8 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
 		@NamedQuery(name = POI.FIND_ALL, query = "SELECT p FROM POI p"),
-		@NamedQuery(name = POI.FIND_BY_ID, query = "SELECT p FROM POI p WHERE p.id = :id")
+		@NamedQuery(name = POI.FIND_BY_ID, query = "SELECT p FROM POI p WHERE p.id = :id"),
+		@NamedQuery(name = POI.FIND_BY_NAME, query = "SELECT p FROM POI p WHERE p.name = :name")
 })
 public class POI implements Serializable {
 	/**
@@ -151,5 +152,5 @@ public class POI implements Serializable {
 	// Named queries
 	public static final String FIND_ALL = "POI.findAll";
 	public static final String FIND_BY_ID = "POI.findById";
-
+	public static final String FIND_BY_NAME = "POI.findByName";
 }
