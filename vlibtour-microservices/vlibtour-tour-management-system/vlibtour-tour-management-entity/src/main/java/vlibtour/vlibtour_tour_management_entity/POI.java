@@ -29,6 +29,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -40,6 +42,9 @@ import jakarta.validation.constraints.NotNull;
  * @author Denis Conan
  */
 @Entity
+@Table(name = "POI", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "name")
+})
 @NamedQueries({
 		@NamedQuery(name = POI.FIND_ALL, query = "SELECT p FROM POI p"),
 		@NamedQuery(name = POI.FIND_BY_ID, query = "SELECT p FROM POI p WHERE p.id = :id"),
@@ -52,7 +57,7 @@ public class POI implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	@NotNull
@@ -96,10 +101,6 @@ public class POI implements Serializable {
 	//#region
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -147,6 +148,24 @@ public class POI implements Serializable {
 				", latitude=" + latitude +
 				", longitude=" + longitude +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof POI))
+			return false;
+
+		POI poi = (POI) o;
+
+		if (Double.compare(poi.latitude, latitude) != 0)
+			return false;
+		if (Double.compare(poi.longitude, longitude) != 0)
+			return false;
+		if (!name.equals(poi.name))
+			return false;
+		return description.equals(poi.description);
 	}
 
 	// Named queries

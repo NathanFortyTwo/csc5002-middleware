@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +36,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -46,6 +49,9 @@ import jakarta.validation.constraints.NotNull;
  * @author Denis Conan
  */
 @Entity
+@Table(name = "Tour", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "name")
+})
 @NamedQueries({
 		@NamedQuery(name = Tour.FIND_ALL, query = "SELECT t FROM Tour t"),
 		@NamedQuery(name = Tour.FIND_BY_ID, query = "SELECT t FROM Tour t WHERE t.id = :id"),
@@ -58,7 +64,7 @@ public class Tour implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	@NotNull
@@ -67,15 +73,14 @@ public class Tour implements Serializable {
 	@NotNull
 	private String description;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tour_poi", joinColumns = @JoinColumn(name = "tour_id"), inverseJoinColumns = @JoinColumn(name = "poi_id"))
 	@OrderColumn(name = "poi_order")
-	private List<POI> POIs;
+	private List<POI> POIs = new ArrayList<>();
 
 	// Constructors, getters, and setters
 
 	public Tour() {
-		POIs = new ArrayList<>();
 	}
 
 	public Tour(String name, String description) {
@@ -87,16 +92,11 @@ public class Tour implements Serializable {
 		}
 		this.name = name;
 		this.description = description;
-		POIs = new ArrayList<>();
 	}
 
 	//#region
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -125,8 +125,11 @@ public class Tour implements Serializable {
 		return POIs;
 	}
 
-	public void setPOIs(List<POI> POIs) {
-		this.POIs = POIs;
+	public void addPOI(POI poi) {
+		if (poi == null) {
+			throw new IllegalArgumentException("poi cannot be null");
+		}
+		POIs.add(poi);
 	}
 	//#endregion
 
@@ -138,6 +141,20 @@ public class Tour implements Serializable {
 				", description='" + description + '\'' +
 				", POIs=" + POIs +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Tour))
+			return false;
+
+		Tour tour = (Tour) o;
+
+		if (!name.equals(tour.name))
+			return false;
+		return description.equals(tour.description);
 	}
 
 	// Named queries
