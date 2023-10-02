@@ -21,11 +21,14 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tour_management_entity;
 
+import jakarta.ejb.ApplicationException;
+
 /**
  * This class defines the exception thrown when managing POI and tour.
  * 
  * @author Denis Conan
  */
+@ApplicationException(rollback = true)
 public class VlibTourTourManagementException extends Exception {
 	/**
 	 * the serial number.
