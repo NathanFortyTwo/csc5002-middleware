@@ -22,7 +22,6 @@ Contributor(s):
 package vlibtour.vlibtour_tour_management_api;
 
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.ejb.Remote;
 import vlibtour.vlibtour_tour_management_entity.POI;
@@ -37,15 +36,16 @@ import vlibtour.vlibtour_tour_management_entity.VlibTourTourManagementException;
 @Remote
 public interface VlibTourTourManagementService {
 
-    public Tour createTour(String name, String description);
+    public Tour createTour(String name, String description) throws VlibTourTourManagementException;
 
-    public POI createPoi(String POIname, String description, double latitude, double longitude);
+    public POI createPoi(String POIname, String description, double latitude, double longitude)
+            throws VlibTourTourManagementException;
 
-    public void addPOItoTour(Tour tour, POI poi);
+    public void addPOItoTour(Long tourId, Long poiId) throws VlibTourTourManagementException;
 
-    public Optional<Tour> getTour(String name);
+    public Tour getTour(String name);
 
-    public Optional<POI> getPOI(String POIName) throws VlibTourTourManagementException;
+    public POI getPOI(String POIName);
 
     public List<Tour> getListTours();
 
