@@ -11,6 +11,7 @@ The project contains the following files and sub-directories:
 	├── readme.md
 	├── run_integration_tests.sh
 	├── run_scenario_w_mapviewer.sh
+	├── run_scenario_visitonly_w_mapviewer.sh
 	├── vlibtour-applications
 	│   ├── vlibtour-tourist-application
 	│   └── vlibtour-tour-management-admin-client
@@ -35,6 +36,8 @@ In short:
 This shell script performs a call to the integration tests scripts of each microservice, and then of the client applications.
 
 - The `run_scenario_w_mapviewer.sh` shell script is for running the demonstration.
+
+- The `run_scenario_visitonly_w_mapviewer.sh` shell script is used for running the demonstration with only the visit emulation microservice: the tourist moves on the map. This shell script is for validating the visit emulation microservice before integration with the other microservices. In particular, it is a copy of `run_scenario_w_mapviewer.sh` with lots of commands that are put in comments.
 
 - The `vlibtour-applications` sub-directory contains the two client application modules.
 Please refer to the document describing the software architecture of the demonstrator:
