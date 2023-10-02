@@ -36,10 +36,9 @@ import vlibtour.vlibtour_tour_management_entity.VlibTourTourManagementException;
 @Remote
 public interface VlibTourTourManagementService {
 
-    public Tour createTour(String name, String description) throws VlibTourTourManagementException;
+    public Tour createTour(Tour tour) throws VlibTourTourManagementException;
 
-    public POI createPoi(String POIname, String description, double latitude, double longitude)
-            throws VlibTourTourManagementException;
+    public POI createPoi(POI poi) throws VlibTourTourManagementException;
 
     public void addPOItoTour(Long tourId, Long poiId) throws VlibTourTourManagementException;
 

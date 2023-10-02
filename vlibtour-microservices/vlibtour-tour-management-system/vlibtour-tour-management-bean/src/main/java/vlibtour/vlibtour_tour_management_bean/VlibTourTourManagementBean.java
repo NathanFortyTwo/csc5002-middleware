@@ -44,11 +44,7 @@ public class VlibTourTourManagementBean implements VlibTourTourManagementService
     @PersistenceContext()
     private EntityManager em;
 
-    public Tour createTour(String name, String description) throws VlibTourTourManagementException {
-        Tour tour = new Tour();
-        tour.setName(name);
-        tour.setDescription(description);
-
+    public Tour createTour(Tour tour) throws VlibTourTourManagementException {
         try {
             em.persist(tour);
             return tour;
@@ -58,14 +54,7 @@ public class VlibTourTourManagementBean implements VlibTourTourManagementService
         }
     }
 
-    public POI createPoi(String name, String description, double latitude, double longitude)
-            throws VlibTourTourManagementException {
-        POI poi = new POI();
-        poi.setName(name);
-        poi.setDescription(description);
-        poi.setLatitude(latitude);
-        poi.setLongitude(longitude);
-
+    public POI createPoi(POI poi) throws VlibTourTourManagementException {
         try {
             em.persist(poi);
             return poi;

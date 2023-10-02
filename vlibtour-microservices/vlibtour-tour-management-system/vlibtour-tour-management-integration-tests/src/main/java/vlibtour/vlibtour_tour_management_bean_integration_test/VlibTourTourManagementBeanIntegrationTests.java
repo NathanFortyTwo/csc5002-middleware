@@ -50,13 +50,19 @@ public class VlibTourTourManagementBeanIntegrationTests {
 				.lookup("vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService");
 
 		// Create tours
-		Tour tour = service.createTour("Tour incroyable", "Description");
+		Tour tour = new Tour("Tour incroyable", "Description");
+		tour = service.createTour(tour);
 
 		// Create POIs
-		POI poi1 = service.createPoi("Musée Grévin", "description of Musée Grévin...", 48.871799, 2.342355);
-		POI poi2 = service.createPoi("Galerie de Valois", "description of Galerie de Valois...", 48.864007, 2.337890);
-		POI poi3 = service.createPoi("Pyramide du Louvre", "description of Pyramide du Louvre...", 48.860959, 2.335757);
-		POI poi4 = service.createPoi("Île de la Cité", "description of Île de la Cité...", 48.855201, 2.347953);
+		POI poi1 = new POI("Musée Grévin", "description of Musée Grévin...", 48.871799, 2.342355);
+		POI poi2 = new POI("Galerie de Valois", "description of Galerie de Valois...", 48.864007, 2.337890);
+		POI poi3 = new POI("Pyramide du Louvre", "description of Pyramide du Louvre...", 48.860959, 2.335757);
+		POI poi4 = new POI("Île de la Cité", "description of Île de la Cité...", 48.855201, 2.347953);
+
+		poi1 = service.createPoi(poi1);
+		poi2 = service.createPoi(poi2);
+		poi3 = service.createPoi(poi3);
+		poi4 = service.createPoi(poi4);
 
 		// Verification taht tour and pois are created
 		assert service.getTour("Tour incroyable") != null;
