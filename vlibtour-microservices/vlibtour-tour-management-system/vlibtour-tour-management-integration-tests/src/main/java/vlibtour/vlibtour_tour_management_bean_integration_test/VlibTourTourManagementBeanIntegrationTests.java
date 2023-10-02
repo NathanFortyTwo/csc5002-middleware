@@ -23,7 +23,6 @@ package vlibtour.vlibtour_tour_management_bean_integration_test;
 
 import javax.naming.*;
 
-import java.util.List;
 import vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService;
 import vlibtour.vlibtour_tour_management_entity.Tour;
 import vlibtour.vlibtour_tour_management_entity.POI;
@@ -48,32 +47,41 @@ public class VlibTourTourManagementBeanIntegrationTests {
 	public static void main(final String[] args) throws Exception {
 		Context myContext = new InitialContext();
 		VlibTourTourManagementService service = (VlibTourTourManagementService) myContext
-				.lookup("VlibTourTourManagementService");
-		Tour tour1 = service.createTour("Tour1", "Description");
-		Tour tour2 = service.createTour("Tour2", "Description");
-		Tour tour3 = service.createTour("Tour3", "Description");
-		Tour tour4 = service.createTour("Tour4", "Description");
-		
+				.lookup("vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService");
+
+		// Create tours
+		Tour tour = service.createTour("Tour incroyable", "Description");
+
+		// Create POIs
 		POI poi1 = service.createPoi("Musée Grévin", "description of Musée Grévin...", 48.871799, 2.342355);
-		POI poi2 = service.createPoi("Jardin du Palais Royal", "description of Jardin du Palais Royal...", 48.866154,
-				2.338562);
-		POI poi3 = service.createPoi("Galerie de Valois", "description of Galerie de Valois...", 48.864007, 2.337890);
-		POI poi4 = service.createPoi("Pyramide du Louvre", "description of Pyramide du Louvre...", 48.860959, 2.335757);
-		POI poi5 = service.createPoi("Île de la Cité", "description of Île de la Cité...", 48.855201, 2.347953);
-		POI poi6 = service.createPoi("Port-Royal", "description of Port-Royal...", 48.839795, 2.337056);
-		POI poi7 = service.createPoi("Les catacombes", "description of Les catacombes...", 48.833566, 2.332416);
+		POI poi2 = service.createPoi("Galerie de Valois", "description of Galerie de Valois...", 48.864007, 2.337890);
+		POI poi3 = service.createPoi("Pyramide du Louvre", "description of Pyramide du Louvre...", 48.860959, 2.335757);
+		POI poi4 = service.createPoi("Île de la Cité", "description of Île de la Cité...", 48.855201, 2.347953);
 
-		service.addPOItoTour(tour1, poi1);
-		service.addPOItoTour(tour1, poi2);
-		service.addPOItoTour(tour1, poi3);
-		service.addPOItoTour(tour1, poi4);
+		// Verification taht tour and pois are created
+		assert service.getTour("Tour incroyable") != null;
 
-		List<POI> listPOIs = tour1.getPOIs();
-		assert listPOIs.size() == 4;
-		assert listPOIs.get(0).equals(poi1);
-		assert listPOIs.get(1).equals(poi2);
-		assert listPOIs.get(2).equals(poi3);
-		assert listPOIs.get(3).equals(poi4);
+		assert service.getPOI("Musée Grévin") != null;
+		assert service.getPOI("Galerie de Valois") != null;
+		assert service.getPOI("Pyramide du Louvre") != null;
+		assert service.getPOI("Île de la Cité") != null;
 
+		// Add POIs to tour
+		System.out.println("Adding POIs to tour");
+
+		service.addPOItoTour(tour.getId(), poi1.getId());
+		service.addPOItoTour(tour.getId(), poi2.getId());
+		service.addPOItoTour(tour.getId(), poi3.getId());
+		service.addPOItoTour(tour.getId(), poi4.getId());
+
+		// Verification that POIs are added to tour
+		Tour createdTour = service.getTour("Tour incroyable");
+		System.out.println("Created tour: " + createdTour);
+
+		assert createdTour.getPOIs().size() == 4;
+		assert createdTour.getPOIs().get(0).equals(poi1);
+		assert createdTour.getPOIs().get(1).equals(poi2);
+		assert createdTour.getPOIs().get(2).equals(poi3);
+		assert createdTour.getPOIs().get(3).equals(poi4);
 	}
 }
