@@ -21,20 +21,51 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tour_management_entity;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class VlibTourTourManagementEntityTest {
 
-	// Be careful! Remove annotation @Disabled for executing this test.
-	@Disabled
 	@Test()
-	public void createPOITest1() throws Exception {
+	public void createPOITest() throws Exception {
+		POI poi = new POI("POI1", "description", 0.0, 0.0);
+
+		assert poi.getName().equals("POI1");
+		assert poi.getDescription().equals("description");
+		assert poi.getLatitude() == 0.0;
+		assert poi.getLongitude() == 0.0;
 	}
 
-	// Be careful! Remove annotation @Disabled for executing this test.
-	@Disabled
 	@Test()
-	public void createTourTest1() throws Exception {
+	public void createTourTest() throws Exception {
+		Tour tour = new Tour("Tour1", "description");
+
+		assert tour.getName().equals("Tour1");
+		assert tour.getDescription().equals("description");
+		assert tour.getPOIs().isEmpty();
+	}
+
+	@Test()
+	public void addPOIToTourTest() throws Exception {
+		Tour tour = new Tour("Tour1", "description");
+		POI poi = new POI("POI1", "description", 0.0, 0.0);
+
+		tour.addPOI(poi);
+
+		assert tour.getPOIs().size() == 1;
+		assert tour.getPOIs().contains(poi);
+	}
+
+	@Test()
+	public void addPOIToTourPreserveOrderTest() throws Exception {
+		Tour tour = new Tour("Tour1", "description");
+		POI poi1 = new POI("POI1", "description", 0.0, 0.0);
+		POI poi2 = new POI("POI2", "description", 0.0, 0.0);
+
+		tour.addPOI(poi1);
+		tour.addPOI(poi2);
+
+		assert tour.getPOIs().size() == 2;
+		assert tour.getPOIs().get(0).equals(poi1);
+		assert tour.getPOIs().get(1).equals(poi2);
 	}
 }
