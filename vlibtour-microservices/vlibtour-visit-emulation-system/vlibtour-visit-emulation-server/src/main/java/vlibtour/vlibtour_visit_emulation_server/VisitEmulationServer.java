@@ -69,9 +69,8 @@ import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
  * @author Denis Conan
  */
 
-// TODO: Annotations
+// TODO: Annotations 
 
-@Path("")
 public final class VisitEmulationServer implements VisitEmulationService {
 	/**
 	 * the visit of the users.
@@ -307,7 +306,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 */
 	// TODO: Annotations
 	
-	public synchronized Position getNextPOIPosition(@PathParam("user") final String user) {
+	public synchronized Position getNextPOIPosition(final String user) {
 		// delegates to GraphOfPositionsForEmulation
 		return GraphOfPositionsForEmulation.getNextPOIPosition(user);
 	}
@@ -320,7 +319,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 */
 	// TODO: Annotations
 	
-	public synchronized Position getCurrentPosition(@PathParam("user") final String user) {
+	public synchronized Position getCurrentPosition(final String user) {
 		// delegates to GraphOfPositionsForEmulation
 		return GraphOfPositionsForEmulation.getCurrentPosition(user);
 	}
@@ -336,7 +335,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 */
 	// TODO: Annotations
 	
-	public synchronized Position stepInCurrentPath(@PathParam("user") final String user) {
+	public synchronized Position stepInCurrentPath(final String user) {
 		// delegates to GraphOfPositionsForEmulation
 		return GraphOfPositionsForEmulation.stepInCurrentPath(user);
 	}
@@ -353,7 +352,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 */
 	// TODO: Annotations
 	
-	public synchronized Position stepsInVisit(@PathParam("user") final String user) {
+	public synchronized Position stepsInVisit( final String user) {
 		if (GraphOfPositionsForEmulation.getAdjacencySets() == null
 				|| GraphOfPositionsForEmulation.getAdjacencySets().isEmpty()) {
 			throw new IllegalStateException("There is no graph of positions");
