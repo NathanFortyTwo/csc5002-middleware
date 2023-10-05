@@ -27,8 +27,8 @@ import static vlibtour.vlibtour_common.Log.VLIBTOUR;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -82,6 +82,7 @@ public class VLibTourVisitTouristApplication {
 	/**
 	 * the dots of the tourists on the map.
 	 */
+	@SuppressWarnings("unused")
 	private static Map<String, MapMarkerDot> mapDots;
 	/**
 	 * the user identifier of the tourist application.
@@ -111,7 +112,7 @@ public class VLibTourVisitTouristApplication {
 	 * {@link vlibtour.vlibtour_emulation_visit_proxy.VLibTourVisitEmulationProxy}.
 	 */
 	@SuppressWarnings("unused")
-	private VisitEmulationProxy visitEmulationProxy;
+	private static VisitEmulationProxy visitEmulationProxy;
 
 	/**
 	 * creates a client application, which will join to a group communication
@@ -171,22 +172,20 @@ public class VLibTourVisitTouristApplication {
 			throw new IllegalArgumentException("userId cannot be null");
 		}
 		this.userId = userId;
+		// TODO LOBBYROOM and GROUPCOMM
 		// call the lobby room proxy in order to create the AMQP artifacts (e.g. virtual
 		// hosts, users with their corresponding login and password, etc.) of the group
 		// communication system
 		// this call should return the necessary information for the creation of the
 		// group communication proxy
-		// TODO GCSInfo gcsInfo = xxx
+		// GCSInfo gcsInfo = xxx
 
+		// TODO GROUPCOMM
 		// instantiate the group communication proxy, which opens a connection, a
 		// channel and create an exchange, a queue, etc.
-		// TODO groupCommProxy = xxx
+		// groupCommProxy = xxx
 
-		// instantiate the visit emulation proxy and obtain the current position of the
-		// user
-		// TODO visitEmulationProxy = xxx
-		// TODO get positions of members and of POIs
-
+		// TODO GROUPCOMM
 		// set the consumer of RabbitMQ messages of the group communication system (via
 		// a call to the proxy)
 		// - the consumer is a default consumer
@@ -195,7 +194,7 @@ public class VLibTourVisitTouristApplication {
 		// check whether all the members have reached the next POI, etc.
 		// (Please, do not implement all these parts in the handleDelivery
 		// method of the anonymous class, but create instance methods!)
-		// TODO set the consumer, etc.
+		// - set the consumer, etc.
 		
 	}
 
@@ -207,7 +206,6 @@ public class VLibTourVisitTouristApplication {
 	 * @throws Exception all the potential problems (since this is a demonstrator,
 	 *                   apply the strategy "fail fast").
 	 */
-	@SuppressWarnings("null")
 	public static void main(final String[] args) throws Exception {
 		String usage = "USAGE: " + VLibTourVisitTouristApplication.class.getCanonicalName()
 				+ " userId (either Joe or Avrel) mode (initiate or join) tourId groupId";
@@ -235,10 +233,15 @@ public class VLibTourVisitTouristApplication {
 		Set<String> group = ExampleOfAVisitWithTwoTourists.DALTON_GROUP;
 		VLIBTOUR.info("{}", () -> userId + "'s application is starting");
 		// instantiate the tour management proxy in order to get the list of POIs of the tour
-		// TODO tourManagementProxy = xxx
-		// TODO and find the tour
+		// TODO TOUR 
+		// instantiate the tourManagement proxy
+		// tourManagementProxy = xxx
+		// TODO TOUR (necessary for the VISITEMULATION)
+		// populate the tour information 
 		Tour tour = null;
-
+		
+		
+		// TODO GROUPCOMM
 		// the identifier of the group communication system is the string concatenation
 		// of the identifier of the tour,
 		// VLibTourLobbyService.GROUP_TOUR_USER_DELIMITER, and the identifier of the
@@ -251,6 +254,14 @@ public class VLibTourVisitTouristApplication {
 		final VLibTourVisitTouristApplication client = new VLibTourVisitTouristApplication(tourId, gcsId, userId,
 				isInitiator);
 		final long shortDuration = 1000;
+		
+		
+		// TODO VISITEMULATION instantiate the visit emulation proxy 
+		// visitEmulationProxy = xxx
+		// TODO VISITEMULATION through the emulation proxy, get the first position of the tourist 
+		//                 who launched the application (whose name is in userId)
+		
+
 		// if this is the initiator
 		// - set the map viewer of the scenario
 		// - while setting the map, check that the POIs of the tour match the ones
@@ -260,6 +271,7 @@ public class VLibTourVisitTouristApplication {
 			map = MapHelper.createMapWithCenterAndZoomLevel(48.851412, 2.343166, 14);
 			Font font = new Font("bold20", Font.BOLD, 20);
 			// CHECKSTYLE:ON
+			// Show the POIs on the map
 			for (POI poi : tour.getPOIs()) {
 				Optional<Position> position = ExampleOfAVisitWithTwoTourists.POSITIONS_OF_SOME_POIS.stream()
 						.filter(p -> poi.getName().equals(p.getName())).findFirst();
@@ -270,38 +282,47 @@ public class VLibTourVisitTouristApplication {
 				MapHelper.addMarkerDotOnMap(map, position.get().getGpsPosition().getLatitude(),
 						position.get().getGpsPosition().getLongitude(), Color.BLACK, font, poi.getName());
 			}
-			// all the tourists start at the same position, i.e. the one already known
-			// (userId's one)
-			mapDots = new HashMap<>();
-			for (String user : group) {
-				Position userPosition = null;
-				// TODO get userPosition
-				
-				mapDots.put(user, MapHelper.addTouristOnMap(map, ExampleOfAVisitWithTwoTourists.COLOR_TOURIST, font,
-						user, userPosition));
-			}
+
 			Thread.sleep(shortDuration);
+			// TODO VISITEMULATION
+			// Show userId first position on the map 
+			// MapHelper.addTouristOnMap(map, ExampleOfAVisitWithTwoTourists.COLOR_TOURIST, font,
+			//		userId, userPosition);
+			
+			// TODO show other users first position on the map, they can start at the same position as the initiator  
+			// Repaint the modified map
 			map.repaint();
 			// wait for painting the map
 			Thread.sleep(LONG_DURATION);
 		}
+		// TODO GROUPCOMM
 		// start the consumption of messages (e.g. positions of group members)
 		// from the group communication system
-		// TODO
 		
+		// TODO GROUPCOMM and VISITEMULATION 
 		// loop until the end of the visit is detected
-		// while looping, repaint when stepping (only the initiator)
-		// TODO
+		// while looping, 
+		  // VISITEMULATION Update UserId Position
+		  // Update other group members position
+		  // For the initiator 
+		    // Move all the users on the map with MapHelper.moveTouristOnMap(<username>,<userposition>);
+		    // Repaint the map with map.repaint();
+		    // wait for painting the map with Thread.sleep(LONG_DURATION);
+
 		
+		// TODO GROUPCOMM and LOBBYROOM
+		// At the end of the loop 
 		// lobby room proxy: nothing to close
 		// group communication proxy: close the channel and the connection
-		// TODO
-		
-		// visit emulation proxy: close the client
-		// TODO
+
+		// TODO VISITEMULATION
+		// visit emulation proxy: close 
 		
 		// close the map
-		// TODO
-		
+		if (isInitiator) {
+			map.dispatchEvent(new WindowEvent(map, WindowEvent.WINDOW_CLOSING));
+		}
+		Thread.sleep(2 * LONG_DURATION);
+		VLIBTOUR.info("{}", () -> "\n\nThe demonstration has finished. Hit return to end the services.\n\n");
 	}
 }
