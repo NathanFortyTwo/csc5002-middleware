@@ -8,21 +8,21 @@ echo -e "\e[1;44m  \e[1;33m ====================================================
 
 cd $VLIBTOURTOURMANAGEMENT/vlibtour-tour-management-integration-tests/
 
-if netstat -nlp 2> /dev/null | grep -q "[[:space:]]8080"; then
+if netstat -nlp 2>/dev/null | grep -q "[[:space:]]8080"; then
     docker exec glassfish asadmin undeploy vlibtour-tour-management-bean
     docker exec glassfish asadmin stop-database
     docker exec glassfish asadmin stop-domain domain1
     docker stop glassfish
     docker rm glassfish
 fi
-if netstat -nlp 2> /dev/null | grep -q "[[:space:]]4848"; then
+if netstat -nlp 2>/dev/null | grep -q "[[:space:]]4848"; then
     docker exec glassfish asadmin undeploy vlibtour-tour-management-bean
     docker exec glassfish asadmin stop-database
     docker exec glassfish asadmin stop-domain domain1
     docker stop glassfish
     docker rm glassfish
 fi
-if netstat -nlp 2> /dev/null | grep -q "[[:space:]]8181"; then
+if netstat -nlp 2>/dev/null | grep -q "[[:space:]]8181"; then
     docker exec glassfish asadmin undeploy vlibtour-tour-management-bean
     docker exec glassfish asadmin stop-database
     docker exec glassfish asadmin stop-domain domain1
@@ -30,11 +30,11 @@ if netstat -nlp 2> /dev/null | grep -q "[[:space:]]8181"; then
     docker rm glassfish
 fi
 
-if ! docker image list | grep 'glassfish-tsp-csc' > /dev/null; then
+if ! docker image list | grep 'glassfish-tsp-csc' >/dev/null; then
     echo -e "\e[1;44m  \e[1;33m ========================================================== \e[0m "
     echo -e "\e[1;44m  \e[1;33m =          Build docker container for glassfish          = \e[0m "
     echo -e "\e[1;44m  \e[1;33m ========================================================== \e[0m "
-    docker build -t glassfish-tsp-csc - < $VLIBTOURTOURMANAGEMENT/glassfish-dockerfile
+    docker build -t glassfish-tsp-csc - <$VLIBTOURTOURMANAGEMENT/glassfish-dockerfile
 fi
 
 echo -e "\e[1;44m  \e[1;33m ================================================================ \e[0m "
@@ -48,7 +48,7 @@ docker exec glassfish asadmin start-database
 docker exec glassfish asadmin deploy /root/vlibtour-tour-management-bean/target/vlibtour-tour-management-bean.jar
 sleep 1
 
-java --add-opens=java.base/java.lang=ALL-UNNAMED -cp ./target/dependency/*:./target/classes vlibtour.vlibtour_tour_management_bean_integration_test.VlibTourTourManagementBeanIntegrationTests
+java -ea --add-opens=java.base/java.lang=ALL-UNNAMED -cp ./target/dependency/*:./target/classes vlibtour.vlibtour_tour_management_bean_integration_test.VlibTourTourManagementBeanIntegrationTests
 result=$?
 
 # empty the database, undeploy the bean, and stop the database and the domain

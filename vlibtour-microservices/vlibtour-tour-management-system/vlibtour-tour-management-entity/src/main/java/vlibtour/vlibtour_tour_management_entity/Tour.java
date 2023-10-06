@@ -22,7 +22,23 @@ Contributor(s):
 package vlibtour.vlibtour_tour_management_entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The entity bean defining a tour in the VLibTour case study. A tour is a
@@ -32,27 +48,117 @@ import java.util.List;
  * 
  * @author Denis Conan
  */
+@Entity
+@Table(name = "Tour", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "name")
+})
+@NamedQueries({
+		@NamedQuery(name = Tour.FIND_ALL, query = "SELECT t FROM Tour t"),
+		@NamedQuery(name = Tour.FIND_BY_ID, query = "SELECT t FROM Tour t WHERE t.id = :id"),
+		@NamedQuery(name = Tour.FIND_BY_NAME, query = "SELECT t FROM Tour t WHERE t.name = :name")
+})
 public class Tour implements Serializable {
 	/**
 	 * the serial version UID.
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * gets the name of the tour.
-	 * 
-	 * @return the name of the tour.
-	 */
-	public String getName() {
-		throw new UnsupportedOperationException("Not implemented, yet.");
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	private Long id;
+
+	@NotNull
+	private String name;
+
+	@NotNull
+	private String description;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "tour_poi", joinColumns = @JoinColumn(name = "tour_id"), inverseJoinColumns = @JoinColumn(name = "poi_id"))
+	@OrderColumn(name = "poi_order")
+	private List<POI> POIs = new ArrayList<>();
+
+	// Constructors, getters, and setters
+
+	public Tour() {
 	}
 
-	/**
-	 * gets the sequence of POIs.
-	 * 
-	 * @return the sequence of POIs as a list.
-	 */
-	public List<POI> getPOIs() {
-		throw new UnsupportedOperationException("Not implemented, yet.");
+	public Tour(String name, String description) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("name cannot be null or empty");
+		}
+		if (description == null || description.isEmpty()) {
+			throw new IllegalArgumentException("description cannot be null or empty");
+		}
+		this.name = name;
+		this.description = description;
 	}
+
+	//#region
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("name cannot be null or empty");
+		}
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		if (description == null || description.isEmpty()) {
+			throw new IllegalArgumentException("description cannot be null or empty");
+		}
+		this.description = description;
+	}
+
+	public List<POI> getPOIs() {
+		return POIs;
+	}
+
+	public void addPOI(POI poi) {
+		if (poi == null) {
+			throw new IllegalArgumentException("poi cannot be null");
+		}
+		POIs.add(poi);
+	}
+	//#endregion
+
+	@Override
+	public String toString() {
+		return "Tour{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", POIs=" + POIs +
+				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Tour))
+			return false;
+
+		Tour tour = (Tour) o;
+
+		if (!name.equals(tour.name))
+			return false;
+		return description.equals(tour.description);
+	}
+
+	// Named queries
+	public static final String FIND_ALL = "Tour.findAll";
+	public static final String FIND_BY_ID = "Tour.findById";
+	public static final String FIND_BY_NAME = "Tour.findByName";
 }
