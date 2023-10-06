@@ -35,8 +35,12 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.GPSPosition;
 import vlibtour.vlibtour_common.Position;
@@ -69,8 +73,7 @@ import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
  * @author Denis Conan
  */
 
-// TODO: Annotations 
-
+@Path("/visitemulation")
 public final class VisitEmulationServer implements VisitEmulationService {
 	/**
 	 * the visit of the users.
@@ -252,8 +255,8 @@ public final class VisitEmulationServer implements VisitEmulationService {
 		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p07, p11);
 		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p11, p13);
 		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p13, p15);
- 		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p15, p17);
-                GraphOfPositionsForEmulation.addEdge(adjacencyLists, p17, p19);
+		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p15, p17);
+		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p17, p19);
 		// third path that reconnects to the second path
 		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p05, p08);
 		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p08, p10);
@@ -305,8 +308,10 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the position of the current POI.
 	 */
 	// TODO: Annotations
-	
-	public synchronized Position getNextPOIPosition(final String user) {
+	@GET
+	@Path("/nextPOIPosition/{user}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Position getNextPOIPosition(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
 		return GraphOfPositionsForEmulation.getNextPOIPosition(user);
 	}
@@ -318,8 +323,10 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the current position of the user.
 	 */
 	// TODO: Annotations
-	
-	public synchronized Position getCurrentPosition(final String user) {
+	@GET
+	@Path("/currentPosition/{user}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Position getCurrentPosition(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
 		return GraphOfPositionsForEmulation.getCurrentPosition(user);
 	}
@@ -334,8 +341,10 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 *         already reached.
 	 */
 	// TODO: Annotations
-	
-	public synchronized Position stepInCurrentPath(final String user) {
+	@PUT
+	@Path("/stepInCurrentPath/{user}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Position stepInCurrentPath(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
 		return GraphOfPositionsForEmulation.stepInCurrentPath(user);
 	}
@@ -351,8 +360,10 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the next position.
 	 */
 	// TODO: Annotations
-	
-	public synchronized Position stepsInVisit( final String user) {
+	@PUT
+	@Path("/stepsInVisit/{user}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Position stepsInVisit(@PathParam("user") final String user) {
 		if (GraphOfPositionsForEmulation.getAdjacencySets() == null
 				|| GraphOfPositionsForEmulation.getAdjacencySets().isEmpty()) {
 			throw new IllegalStateException("There is no graph of positions");
