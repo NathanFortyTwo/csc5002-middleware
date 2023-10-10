@@ -178,124 +178,80 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the graph.
 	 */
 	static Map<Position, Set<Position>> initTourWithPOIs() {
-		// CHECKSTYLE:OFF
-		// creation of the positions
-		// positions with a non-integer name are the ones of POIs: cf.
-		// ExampleOfAVisitWithTwoTourists.POSITIONS_OF_SOME_POIS
-		Position p01 = new Position(String.valueOf(1), new GPSPosition(48.869301, 2.3450524), "Musée Pooja Namo");
-		Position p02 = new Position(String.valueOf(2), new GPSPosition(48.8528621, 2.3209537),
-				"Galeries Lafayette Haussmann");
-		Position p03 = new Position(String.valueOf(3), new GPSPosition(48.8634926, 2.3218978), "Place Saint Augustin");
-		Position p04 = ExampleOfAVisitWithTwoTourists.POSITION4;
-		Position p05 = new Position(String.valueOf(5), new GPSPosition(48.869301, 2.3450524), "Bonne Nouvelle");
-		Position p06 = new Position(String.valueOf(6), new GPSPosition(48.869301, 2.3450524), "Strasbourg Saint-Denis");
-		Position p07 = new Position(String.valueOf(7), new GPSPosition(48.8674807, 2.33698), "La Bourse");
-		Position p08 = new Position(String.valueOf(8), new GPSPosition(48.8687025, 2.3464083), "43, rue de Cléry");
-		Position p09 = new Position(String.valueOf(9), new GPSPosition(48.867572, 2.353312), "123, bd Sébastopol");
-		Position p10 = new Position(String.valueOf(10), new GPSPosition(48.8673138, 2.3427597), "37, rue du Mail");
-		Position p11 = ExampleOfAVisitWithTwoTourists.POSITION11;
-		Position p12 = new Position(String.valueOf(12), new GPSPosition(48.864414, 2.351565), "26, rue de Turbigo");
-		Position p13 = new Position(String.valueOf(13), new GPSPosition(48.865320, 2.338845), "33, rue de Valois");
-		Position p14 = new Position(String.valueOf(14), new GPSPosition(48.863824, 2.348924), "14, rue de Turbigo");
-		Position p15 = ExampleOfAVisitWithTwoTourists.POSITION15;
-		Position p16 = new Position(String.valueOf(16), new GPSPosition(48.862928, 2.345094), "Jardin Nelson Mandela");
-		Position p17 = new Position(String.valueOf(17), new GPSPosition(48.8637511, 2.3361412), "La Comédie Française");
-		Position p18 = new Position(String.valueOf(18), new GPSPosition(48.8609335, 2.3385873), "154, rue de Rivoli");
-		Position p19 = ExampleOfAVisitWithTwoTourists.POSITION19;
-		Position p20 = new Position(String.valueOf(20), new GPSPosition(48.858472, 2.348140), "41, rue de Rivoli");
-		Position p21 = new Position(String.valueOf(21), new GPSPosition(48.860148, 2.333168),
-				"6 quai François Mitterand");
-		Position p22 = ExampleOfAVisitWithTwoTourists.POSITION22;
-		Position p23 = new Position(String.valueOf(23), new GPSPosition(48.859618, 2.333050), "Pont du Caroussel");
-		Position p24 = new Position(String.valueOf(24), new GPSPosition(48.853563, 2.347127),
-				"Parvis de la Cathédrale Notre Dame");
-		Position p25 = new Position(String.valueOf(25), new GPSPosition(48.859562, 2.329248), "1, rue du Bac");
-		Position p26 = new Position(String.valueOf(26), new GPSPosition(48.858757, 2.332578), "Pont du Caroussel");
-		Position p27 = new Position(String.valueOf(27), new GPSPosition(48.8543549, 2.3253203), "rue du Bac");
-		Position p28 = new Position(String.valueOf(28), new GPSPosition(48.852815, 2.346655), "43, rue de la Bucherie");
-		Position p29 = new Position(String.valueOf(29), new GPSPosition(48.856075, 2.340424), "1, rue de Nevers");
-		Position p30 = new Position(String.valueOf(30), new GPSPosition(48.847706, 2.3269443), "rue de Rennes");
-		Position p31 = new Position(String.valueOf(31), new GPSPosition(48.851410, 2.345840), "Square André-Lefèvre");
-		Position p32 = new Position(String.valueOf(32), new GPSPosition(48.853762, 2.344292), "Place Saint-Michel");
-		Position p33 = new Position(String.valueOf(33), new GPSPosition(48.843992, 2.323693),
-				"Église Notre Dame des Champs");
-		Position p34 = new Position(String.valueOf(34), new GPSPosition(48.849617, 2.344853), "52, rue des Écoles");
-		Position p35 = new Position(String.valueOf(35), new GPSPosition(48.850380, 2.342704), "26 bd Saint-Michel");
-		Position p36 = new Position(String.valueOf(36), new GPSPosition(48.840605, 2.324314), "8 rue de la Gaité");
-		Position p37 = new Position(String.valueOf(37), new GPSPosition(48.843863, 2.338773), "103, bd Saint-Michel");
-		Position p38 = new Position(String.valueOf(38), new GPSPosition(48.845173, 2.3333816), "Théâtre Odéon");
-		Position p39 = new Position(String.valueOf(39), new GPSPosition(48.837597, 2.322994), "91 avenue duMaine");
-		Position p40 = ExampleOfAVisitWithTwoTourists.POSITION40;
-		Position p41 = new Position(String.valueOf(41), new GPSPosition(48.845074, 2.332309), "Odéon");
-		Position p42 = new Position(String.valueOf(42), new GPSPosition(48.836658, 2.325762), "2, rue Fernat");
-		Position p43 = new Position(String.valueOf(43), new GPSPosition(48.840069, 2.337088), "Hôpital Val-de-Grace");
-		Position p44 = new Position(String.valueOf(44), new GPSPosition(48.8425568, 2.3322554), "Observatoire Assas");
-		Position p45 = new Position(String.valueOf(45), new GPSPosition(48.835549, 2.328830), "21, rue Froidevaux");
-		Position p46 = new Position(String.valueOf(46), new GPSPosition(48.835436, 2.333569), "Denfert Rochereau");
-		Position p47 = ExampleOfAVisitWithTwoTourists.POSITION47;
-		// CHECKSTYLE:OFF
 		Map<Position, Set<Position>> adjacencyLists = new HashMap<>();
-		// part of the network that is useless
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p01, p06);
-		// from the departure of the tour to the first POI
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p02, p03);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p03, p04);
-		// from the first POI to the second POI
-		// first path
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p04, p05);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p05, p06);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p06, p09);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p09, p12);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p12, p14);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p14, p16);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p16, p18);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p18, p19);
-		// second path
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p04, p07);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p07, p11);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p11, p13);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p13, p15);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p15, p17);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p17, p19);
-		// third path that reconnects to the second path
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p05, p08);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p08, p10);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p10, p11);
-		// from the second POI to the third POI
-		// first path
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p19, p20);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p20, p22);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p22, p24);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p24, p28);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p28, p31);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p31, p34);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p34, p37);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p37, p40);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p40, p43);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p43, p46);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p46, p47);
-		// second path that reconnects to the first path
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p19, p21);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p21, p23);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p23, p26);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p26, p29);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p29, p32);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p32, p35);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p35, p38);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p38, p41);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p41, p44);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p44, p43);
-		// third path that begins like the second path
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p26, p25);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p25, p27);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p27, p30);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p30, p33);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p33, p36);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p36, p39);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p39, p42);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p42, p45);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p45, p47);
-		GraphOfPositionsForEmulation.addEdge(adjacencyLists, p47, p46);
+
+		// Create positions for Points of Interest (POIs)
+		Position[] poiPositions = {
+				new Position(String.valueOf(1), new GPSPosition(48.869301, 2.3450524), "Musée Pooja Namo"),
+				new Position(String.valueOf(2), new GPSPosition(48.8528621, 2.3209537), "Galeries Lafayette Haussmann"),
+				new Position(String.valueOf(3), new GPSPosition(48.8634926, 2.3218978), "Place Saint Augustin"),
+				ExampleOfAVisitWithTwoTourists.POSITION4,
+				new Position(String.valueOf(5), new GPSPosition(48.869301, 2.3450524), "Bonne Nouvelle"),
+				new Position(String.valueOf(6), new GPSPosition(48.869301, 2.3450524), "Strasbourg Saint-Denis"),
+				new Position(String.valueOf(7), new GPSPosition(48.8674807, 2.33698), "La Bourse"),
+				new Position(String.valueOf(8), new GPSPosition(48.8687025, 2.3464083), "43, rue de Cléry"),
+				new Position(String.valueOf(9), new GPSPosition(48.867572, 2.353312), "123, bd Sébastopol"),
+				new Position(String.valueOf(10), new GPSPosition(48.8673138, 2.3427597), "37, rue du Mail"),
+				ExampleOfAVisitWithTwoTourists.POSITION11,
+				new Position(String.valueOf(12), new GPSPosition(48.864414, 2.351565), "26, rue de Turbigo"),
+				new Position(String.valueOf(13), new GPSPosition(48.865320, 2.338845), "33, rue de Valois"),
+				new Position(String.valueOf(14), new GPSPosition(48.863824, 2.348924), "14, rue de Turbigo"),
+				ExampleOfAVisitWithTwoTourists.POSITION15,
+				new Position(String.valueOf(16), new GPSPosition(48.862928, 2.345094), "Jardin Nelson Mandela"),
+				new Position(String.valueOf(17), new GPSPosition(48.8637511, 2.3361412), "La Comédie Française"),
+				new Position(String.valueOf(18), new GPSPosition(48.8609335, 2.3385873), "154, rue de Rivoli"),
+				ExampleOfAVisitWithTwoTourists.POSITION19,
+				new Position(String.valueOf(20), new GPSPosition(48.858472, 2.348140), "41, rue de Rivoli"),
+				new Position(String.valueOf(21), new GPSPosition(48.860148, 2.333168), "6 quai François Mitterand"),
+				ExampleOfAVisitWithTwoTourists.POSITION22,
+				new Position(String.valueOf(23), new GPSPosition(48.859618, 2.333050), "Pont du Caroussel"),
+				new Position(String.valueOf(24), new GPSPosition(48.853563, 2.347127),
+						"Parvis de la Cathédrale Notre Dame"),
+				new Position(String.valueOf(25), new GPSPosition(48.859562, 2.329248), "1, rue du Bac"),
+				new Position(String.valueOf(26), new GPSPosition(48.858757, 2.332578), "Pont du Caroussel"),
+				new Position(String.valueOf(27), new GPSPosition(48.8543549, 2.3253203), "rue du Bac"),
+				new Position(String.valueOf(28), new GPSPosition(48.852815, 2.346655), "43, rue de la Bucherie"),
+				new Position(String.valueOf(29), new GPSPosition(48.856075, 2.340424), "1, rue de Nevers"),
+				new Position(String.valueOf(30), new GPSPosition(48.847706, 2.3269443), "rue de Rennes"),
+				new Position(String.valueOf(31), new GPSPosition(48.851410, 2.345840), "Square André-Lefèvre"),
+				new Position(String.valueOf(32), new GPSPosition(48.853762, 2.344292), "Place Saint-Michel"),
+				new Position(String.valueOf(33), new GPSPosition(48.843992, 2.323693), "Église Notre Dame des Champs"),
+				new Position(String.valueOf(34), new GPSPosition(48.849617, 2.344853), "52, rue des Écoles"),
+				new Position(String.valueOf(35), new GPSPosition(48.850380, 2.342704), "26 bd Saint-Michel"),
+				new Position(String.valueOf(36), new GPSPosition(48.840605, 2.324314), "8 rue de la Gaité"),
+				new Position(String.valueOf(37), new GPSPosition(48.843863, 2.338773), "103, bd Saint-Michel"),
+				new Position(String.valueOf(38), new GPSPosition(48.845173, 2.3333816), "Théâtre Odéon"),
+				new Position(String.valueOf(39), new GPSPosition(48.837597, 2.322994), "91 avenue duMaine"),
+				ExampleOfAVisitWithTwoTourists.POSITION40,
+				new Position(String.valueOf(41), new GPSPosition(48.845074, 2.332309), "Odéon"),
+				new Position(String.valueOf(42), new GPSPosition(48.836658, 2.325762), "2, rue Fernat"),
+				new Position(String.valueOf(43), new GPSPosition(48.840069, 2.337088), "Hôpital Val-de-Grace"),
+				new Position(String.valueOf(44), new GPSPosition(48.8425568, 2.3322554), "Observatoire Assas"),
+				new Position(String.valueOf(45), new GPSPosition(48.835549, 2.328830), "21, rue Froidevaux"),
+				new Position(String.valueOf(46), new GPSPosition(48.835436, 2.333569), "Denfert Rochereau"),
+				ExampleOfAVisitWithTwoTourists.POSITION47
+		};
+
+		int[][] alternativePaths = {
+				{ 1, 6 },
+				{ 2, 3, 4, 5, 6, 9, 12, 14, 16, 18, 19 },
+				{ 4, 7, 11, 13, 15, 17, 19 },
+				{ 5, 8, 10, 11 },
+				{ 19, 20, 22, 24, 28, 31, 34, 37, 40, 43, 46, 47 },
+				{ 19, 21, 23, 26, 29, 32, 35, 38, 41, 44, 43 },
+				{ 26, 25, 27, 30, 33, 36, 39, 42, 45, 47, 46 }
+		};
+
+		// Add edges for each path
+		for (int[] path : alternativePaths) {
+			for (int i = 0; i < path.length - 1; i++) {
+				Position from = poiPositions[path[i] - 1];
+				Position to = poiPositions[path[i + 1] - 1];
+
+				GraphOfPositionsForEmulation.addEdge(adjacencyLists, from, to);
+			}
+		}
+
 		return adjacencyLists;
 	}
 
