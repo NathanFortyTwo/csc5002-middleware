@@ -142,7 +142,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 				group.stream().forEach(u -> EMULATION.debug("{}", () -> u + ": visit = "
 						+ visits.get(u).stream().map(Position::getName).collect(Collectors.joining(","))));
 			}
-			// FIXME visits must contain u
+			//! FIXME visits must contain u
 			group.stream().forEach(u -> {
 				currentIndicesInVisits.put(u, 0);
 				GraphOfPositionsForEmulation.setAPathTo(u, visits.get(u).get(0));
@@ -307,7 +307,6 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @param user the identifier of the user.
 	 * @return the position of the current POI.
 	 */
-	// TODO: Annotations
 	@GET
 	@Path("/nextPOIPosition/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -322,7 +321,6 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @param user the identifier of the user.
 	 * @return the current position of the user.
 	 */
-	// TODO: Annotations
 	@GET
 	@Path("/currentPosition/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -340,7 +338,6 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the new position of the user, or the same if the end of the path is
 	 *         already reached.
 	 */
-	// TODO: Annotations
 	@PUT
 	@Path("/stepInCurrentPath/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -359,7 +356,6 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @param user the identifier of the user.
 	 * @return the next position.
 	 */
-	// TODO: Annotations
 	@PUT
 	@Path("/stepsInVisit/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
