@@ -36,7 +36,6 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -308,7 +307,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the position of the current POI.
 	 */
 	@GET
-	@Path("/nextPOIPosition/{user}")
+	@Path("/getNextPOIPosition/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position getNextPOIPosition(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
@@ -322,7 +321,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the current position of the user.
 	 */
 	@GET
-	@Path("/currentPosition/{user}")
+	@Path("/getCurrentPosition/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position getCurrentPosition(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
@@ -338,7 +337,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the new position of the user, or the same if the end of the path is
 	 *         already reached.
 	 */
-	@PUT
+	@GET
 	@Path("/stepInCurrentPath/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position stepInCurrentPath(@PathParam("user") final String user) {
@@ -356,7 +355,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @param user the identifier of the user.
 	 * @return the next position.
 	 */
-	@PUT
+	@GET
 	@Path("/stepsInVisit/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position stepsInVisit(@PathParam("user") final String user) {

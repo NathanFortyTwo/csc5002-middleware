@@ -74,10 +74,10 @@ class VLibTourVisitEmulationServerIT {
 		Client client = ClientBuilder.newClient();
 		URI uri = UriBuilder.fromUri(ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER).build();
 		service = client.target(uri);
+		System.out.println("URI: " + uri);
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testGetNextPOIPosition() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/getNextPOIPosition/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
@@ -87,7 +87,6 @@ class VLibTourVisitEmulationServerIT {
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testGetCurrentPosition() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/getCurrentPosition/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
@@ -97,7 +96,6 @@ class VLibTourVisitEmulationServerIT {
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testStepInCurrentPath() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/stepInCurrentPath/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
@@ -107,10 +105,9 @@ class VLibTourVisitEmulationServerIT {
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testStepsInVisit() throws IOException {
 		Response jsonResponse = service
-				.path("visitemulation/stepInCurrentPath/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
+				.path("visitemulation/stepsInVisit/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
 				.accept(MediaType.APPLICATION_JSON).get();
 		Assertions.assertNotNull(jsonResponse);
 		Assertions.assertNotNull(jsonResponse.readEntity(Position.class));
