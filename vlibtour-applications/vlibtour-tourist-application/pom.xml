@@ -48,7 +48,14 @@ Contributor(s):
       <groupId>eu.telecomsudparis.vlibtour.vlibtour-tour-management-system</groupId>
       <artifactId>vlibtour-tour-management-api</artifactId>
       <version>1.0-SNAPSHOT</version>
+    </dependency> 
+    
+    <dependency>
+      <groupId>eu.telecomsudparis.vlibtour.vlibtour-visit-emulation-system</groupId>
+      <artifactId>vlibtour-visit-emulation-server</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
+    
     <dependency>
       <groupId>jakarta.platform</groupId>
       <artifactId>jakarta.jakartaee-api</artifactId>

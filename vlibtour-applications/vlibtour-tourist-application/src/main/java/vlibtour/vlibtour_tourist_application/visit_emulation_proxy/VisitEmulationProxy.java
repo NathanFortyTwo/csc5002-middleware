@@ -21,6 +21,14 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tourist_application.visit_emulation_proxy;
 
+import java.net.URI;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriBuilder;
+import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
 
@@ -31,8 +39,16 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 	/**
 	 * constructs the REST proxy.
 	 */
+	private WebTarget service;
+	private Client client;
+
 	public VisitEmulationProxy() {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		// init webtarget
+
+		this.client = ClientBuilder.newClient();
+		URI uri = UriBuilder.fromUri(ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER).build();
+		this.service = client.target(uri);
+		System.out.println("VisitEmulationProxy: " + service.getUri());
 	}
 
 	/**
@@ -44,7 +60,10 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 	 * @return the position of the current POI.
 	 */
 	public synchronized Position getNextPOIPosition(final String user) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		Position position = service
+				.path("visitemulation/getNextPOIPosition/" + user).request()
+				.accept(MediaType.APPLICATION_JSON).get().readEntity(Position.class);
+		return position;
 	}
 
 	/**
@@ -54,7 +73,10 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 	 * @return the current position of the user.
 	 */
 	public synchronized Position getCurrentPosition(final String user) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		Position position = service
+				.path("visitemulation/getCurrentPosition/" + user).request()
+				.accept(MediaType.APPLICATION_JSON).get().readEntity(Position.class);
+		return position;
 	}
 
 	/**
@@ -66,7 +88,10 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 	 *         already reached.
 	 */
 	public synchronized Position stepInCurrentPath(final String user) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		Position position = service
+				.path("visitemulation/stepInCurrentPath/" + user).request()
+				.accept(MediaType.APPLICATION_JSON).post(null).readEntity(Position.class);
+		return position;
 	}
 
 	/**
@@ -79,13 +104,16 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 	 * @return the next position.
 	 */
 	public synchronized Position stepsInVisit(final String user) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		Position position = service
+				.path("visitemulation/stepsInVisit/" + user).request()
+				.accept(MediaType.APPLICATION_JSON).post(null).readEntity(Position.class);
+		return position;
 	}
 
 	/**
 	 * closes the client.
 	 */
 	public void close() {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		client.close();
 	}
 }
