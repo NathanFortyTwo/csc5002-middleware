@@ -286,7 +286,7 @@ public class VLibTourVisitTouristApplication {
 		// TODO VISITEMULATION through the emulation proxy, get the first position of
 		// the tourist
 		// who launched the application (whose name is in userId)
-		Position startingPosition = visitEmulationProxy.getCurrentPosition(userId);
+		Position startingPosition = ExampleOfAVisitWithTwoTourists.DEPARTURE_POSITION;
 		// if this is the initiator
 		// - set the map viewer of the scenario
 		// - while setting the map, check that the POIs of the tour match the ones
@@ -311,14 +311,12 @@ public class VLibTourVisitTouristApplication {
 
 			Thread.sleep(shortDuration);
 			// TODO VISITEMULATION
-
 			// Show userId first position on the map
 
 			// TODO show other users first position on the map, they can start at the same
 			// position as the initiator
 			// Repaint the modified map
 			for (String username : group) {
-
 				MapMarkerDot userDot = MapHelper.addTouristOnMap(map, ExampleOfAVisitWithTwoTourists.COLOR_TOURIST,
 						font,
 						username, startingPosition);
@@ -334,12 +332,14 @@ public class VLibTourVisitTouristApplication {
 		// from the group communication system
 
 		// TODO GROUPCOMM and VISITEMULATION
+		Thread.sleep(LONG_DURATION * 5);
 		MapMarkerDot userDot = mapDots.get(userId);
 		while (userDot != null) {
 			Position nextPOIPosition = visitEmulationProxy.getNextPOIPosition(userId);
 			while (true) {
 
 				Position currentPositionInPath = visitEmulationProxy.stepInCurrentPath(userId);
+				System.out.println(currentPositionInPath.getName());
 				MapHelper.moveTouristOnMap(userDot, currentPositionInPath);
 				map.repaint();
 				Thread.sleep(LONG_DURATION);

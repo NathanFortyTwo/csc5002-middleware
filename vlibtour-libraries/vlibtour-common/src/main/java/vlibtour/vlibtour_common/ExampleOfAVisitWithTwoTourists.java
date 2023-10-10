@@ -80,7 +80,7 @@ public final class ExampleOfAVisitWithTwoTourists {
 	 * departure position of all the users.
 	 */
 	public static final Position DEPARTURE_POSITION = new Position(String.valueOf(2),
-			new GPSPosition(48.869301, 2.3450524));
+			new GPSPosition(48.870081157416955, 2.3165105054638717), "Elysée");
 	/**
 	 * Position 4, i.e. a POI.
 	 */

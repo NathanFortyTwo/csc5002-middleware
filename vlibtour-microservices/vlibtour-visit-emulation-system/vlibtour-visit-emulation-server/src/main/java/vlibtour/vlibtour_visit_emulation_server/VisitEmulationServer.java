@@ -183,11 +183,11 @@ public final class VisitEmulationServer implements VisitEmulationService {
 		// Create positions for Points of Interest (POIs)
 		Position[] poiPositions = {
 				new Position(String.valueOf(1), new GPSPosition(48.869301, 2.3450524), "Musée Pooja Namo"),
-				new Position(String.valueOf(2), new GPSPosition(48.8528621, 2.3209537), "Galeries Lafayette Haussmann"),
-				new Position(String.valueOf(3), new GPSPosition(48.8634926, 2.3218978), "Place Saint Augustin"),
+				new Position(String.valueOf(2), new GPSPosition(48.8738596, 2.3320555), "Elysée"),
+				new Position(String.valueOf(3), new GPSPosition(48.8754451, 2.3196203), "Place Saint Augustin"),
 				ExampleOfAVisitWithTwoTourists.POSITION4,
-				new Position(String.valueOf(5), new GPSPosition(48.869301, 2.3450524), "Bonne Nouvelle"),
-				new Position(String.valueOf(6), new GPSPosition(48.869301, 2.3450524), "Strasbourg Saint-Denis"),
+				new Position(String.valueOf(5), new GPSPosition(48.870998, 2.3472050), "Bonne Nouvelle"),
+				new Position(String.valueOf(6), new GPSPosition(48.8695756, 2.352890), "Strasbourg Saint-Denis"),
 				new Position(String.valueOf(7), new GPSPosition(48.8674807, 2.33698), "La Bourse"),
 				new Position(String.valueOf(8), new GPSPosition(48.8687025, 2.3464083), "43, rue de Cléry"),
 				new Position(String.valueOf(9), new GPSPosition(48.867572, 2.353312), "123, bd Sébastopol"),
