@@ -99,7 +99,7 @@ class VLibTourVisitEmulationServerIT {
 	void testStepInCurrentPath() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/stepInCurrentPath/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
-				.accept(MediaType.APPLICATION_JSON).get();
+				.accept(MediaType.APPLICATION_JSON).post(null);
 		Assertions.assertNotNull(jsonResponse);
 		Assertions.assertNotNull(jsonResponse.readEntity(Position.class));
 	}
@@ -108,7 +108,7 @@ class VLibTourVisitEmulationServerIT {
 	void testStepsInVisit() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/stepsInVisit/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
-				.accept(MediaType.APPLICATION_JSON).get();
+				.accept(MediaType.APPLICATION_JSON).post(null);
 		Assertions.assertNotNull(jsonResponse);
 		Assertions.assertNotNull(jsonResponse.readEntity(Position.class));
 	}

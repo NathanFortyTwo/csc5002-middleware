@@ -36,6 +36,7 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -337,7 +338,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @return the new position of the user, or the same if the end of the path is
 	 *         already reached.
 	 */
-	@GET
+	@POST
 	@Path("/stepInCurrentPath/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position stepInCurrentPath(@PathParam("user") final String user) {
@@ -355,7 +356,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @param user the identifier of the user.
 	 * @return the next position.
 	 */
-	@GET
+	@POST
 	@Path("/stepsInVisit/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position stepsInVisit(@PathParam("user") final String user) {
