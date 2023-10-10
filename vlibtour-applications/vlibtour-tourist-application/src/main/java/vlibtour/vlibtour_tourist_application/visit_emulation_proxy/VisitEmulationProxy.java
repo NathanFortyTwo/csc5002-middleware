@@ -48,7 +48,6 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 		this.client = ClientBuilder.newClient();
 		URI uri = UriBuilder.fromUri(ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER).build();
 		this.service = client.target(uri);
-		System.out.println("VisitEmulationProxy: " + service.getUri());
 	}
 
 	/**
