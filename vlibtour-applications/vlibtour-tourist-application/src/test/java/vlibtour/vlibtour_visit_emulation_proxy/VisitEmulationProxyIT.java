@@ -22,26 +22,52 @@ Contributor(s):
  */
 package vlibtour.vlibtour_visit_emulation_proxy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
+import vlibtour.vlibtour_common.Position;
+import vlibtour.vlibtour_tourist_application.visit_emulation_proxy.VisitEmulationProxy;
+
 final class VisitEmulationProxyIT {
+	private static final String user = ExampleOfAVisitWithTwoTourists.USER_ID_JOE;
+	private static VisitEmulationProxy proxy;
 
 	@BeforeAll
-	static void setUp() {
-		// this is an integration test that assumes that the visit emulation server is
-		// started and ready to receive requests
+	static void setUp() throws IOException, InterruptedException, URISyntaxException {
+		proxy = new VisitEmulationProxy();
 	}
 
 	@Test
 	void test() {
-            // TODO
+		Position lastPosition;
+		while (true) {
+			Position nextPOIPosition = proxy.getNextPOIPosition(user);
+			while (true) {
+				Position currentPositionInPath = proxy.stepInCurrentPath(user);
+				if (currentPositionInPath.getName().equals(nextPOIPosition.getName())) {
+					break;
+				}
+			}
+			Position nextPOI = proxy.stepsInVisit(user);
+			if (nextPOI.getName().equals(nextPOIPosition.getName())) {
+				lastPosition = nextPOIPosition;
+				break;
+			}
+		}
+
+		assertEquals(lastPosition, ExampleOfAVisitWithTwoTourists.POSITION47);
+
 	}
 
 	@AfterAll
 	static void tearDown() {
-		// since the rabbitmq container is not started in method @BeforeClass,
-		// it is not stopped and removed here
+		proxy.close();
 	}
 }

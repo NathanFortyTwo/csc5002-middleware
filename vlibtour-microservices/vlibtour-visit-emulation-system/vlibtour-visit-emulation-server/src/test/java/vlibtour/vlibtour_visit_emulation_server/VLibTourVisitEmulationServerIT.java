@@ -42,7 +42,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.Position;
@@ -77,7 +76,6 @@ class VLibTourVisitEmulationServerIT {
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testGetNextPOIPosition() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/getNextPOIPosition/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
@@ -87,7 +85,6 @@ class VLibTourVisitEmulationServerIT {
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testGetCurrentPosition() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/getCurrentPosition/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
@@ -97,21 +94,19 @@ class VLibTourVisitEmulationServerIT {
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testStepInCurrentPath() throws IOException {
 		Response jsonResponse = service
 				.path("visitemulation/stepInCurrentPath/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
-				.accept(MediaType.APPLICATION_JSON).get();
+				.accept(MediaType.APPLICATION_JSON).post(null);
 		Assertions.assertNotNull(jsonResponse);
 		Assertions.assertNotNull(jsonResponse.readEntity(Position.class));
 	}
 
 	@Test
-	@Disabled // FIXME
 	void testStepsInVisit() throws IOException {
 		Response jsonResponse = service
-				.path("visitemulation/stepInCurrentPath/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
-				.accept(MediaType.APPLICATION_JSON).get();
+				.path("visitemulation/stepsInVisit/" + ExampleOfAVisitWithTwoTourists.USER_ID_JOE).request()
+				.accept(MediaType.APPLICATION_JSON).post(null);
 		Assertions.assertNotNull(jsonResponse);
 		Assertions.assertNotNull(jsonResponse.readEntity(Position.class));
 	}

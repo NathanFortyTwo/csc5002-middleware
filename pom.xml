@@ -19,10 +19,12 @@ Initial developer(s): Denis Conan
 Contributor(s):
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.telecomsudparis.vlibtour</groupId>
-  <artifactId>vlibtour</artifactId>
+  <artifactId>vlibtour-FeretNathan-GuillemetSamuel</artifactId>
   <packaging>pom</packaging>
   <name>root: the VLibTour project</name>
   <version>1.0-SNAPSHOT</version>
@@ -73,35 +75,35 @@ Contributor(s):
       </dependency>
       <!-- logging in rabbitmq -->
       <dependency>
-	<groupId>org.slf4j</groupId>
-	<artifactId>slf4j-api</artifactId>
-	<version>1.7.25</version>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.25</version>
       </dependency>
       <dependency>
-	<groupId>org.slf4j</groupId>
-	<artifactId>slf4j-simple</artifactId>
-	<version>1.7.25</version>
-	<scope>test</scope>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.25</version>
+        <scope>test</scope>
       </dependency>
       <!-- JAVA EE API -->
       <dependency>
         <groupId>jakarta.platform</groupId>
         <artifactId>jakarta.jakartaee-api</artifactId>
-	<version>10.0.0</version>
+        <version>10.0.0</version>
       </dependency>
       <!-- Glassfish client for the lookup operation -->
       <dependency>
-	<groupId>org.glassfish.main.appclient</groupId>
-	<artifactId>gf-client</artifactId>
-	<version>${glassfish.version}</version>
+        <groupId>org.glassfish.main.appclient</groupId>
+        <artifactId>gf-client</artifactId>
+        <version>${glassfish.version}</version>
       </dependency>
       <!-- Glassfish Jersey REST -->
       <dependency>
-	<groupId>org.glassfish.jersey</groupId>
-	<artifactId>jersey-bom</artifactId>
-	<version>${jersey.version}</version>
-	<type>pom</type>
-	<scope>import</scope>
+        <groupId>org.glassfish.jersey</groupId>
+        <artifactId>jersey-bom</artifactId>
+        <version>${jersey.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <!-- JSON serialisation with Jersey -->
       <dependency>
@@ -111,9 +113,9 @@ Contributor(s):
       </dependency>
       <!-- RabbitMQ AMQP client -->
       <dependency>
-	<groupId>com.rabbitmq</groupId>
-	<artifactId>amqp-client</artifactId>
-	<version>5.16.0</version>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>amqp-client</artifactId>
+        <version>5.16.0</version>
       </dependency>
       <!-- JSON serialisation with Gson -->
       <dependency>
@@ -123,45 +125,45 @@ Contributor(s):
       </dependency>
       <!-- openstreetmap map viewer -->
       <dependency>
-	<groupId>org.openstreetmap.jmapviewer</groupId>
-	<artifactId>jmapviewer</artifactId>
-	<version>2.3</version>
+        <groupId>org.openstreetmap.jmapviewer</groupId>
+        <artifactId>jmapviewer</artifactId>
+        <version>2.3</version>
       </dependency>
-       <dependency>
-	<groupId>org.jxmapviewer</groupId>
-	<artifactId>jxmapviewer2</artifactId>
-	<version>2.2</version>
-      </dependency>
-     <!-- for the class StringUtils -->
       <dependency>
-	<groupId>org.apache.commons</groupId>
-	<artifactId>commons-lang3</artifactId>
-	<version>3.6</version>
+        <groupId>org.jxmapviewer</groupId>
+        <artifactId>jxmapviewer2</artifactId>
+        <version>2.2</version>
+      </dependency>
+      <!-- for the class StringUtils -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.6</version>
       </dependency>
       <!-- library to generate random passwords -->
       <dependency>
-	<groupId>org.passay</groupId>
-	<artifactId>passay</artifactId>
-	<version>1.3.0</version>
+        <groupId>org.passay</groupId>
+        <artifactId>passay</artifactId>
+        <version>1.3.0</version>
       </dependency>
       <!-- RabbitMQ HTTP API (https://github.com/rabbitmq/hop) -->
       <dependency>
-	<groupId>com.rabbitmq</groupId>
-	<artifactId>http-client</artifactId>
-	<version>4.1.2</version>
-	<scope>test</scope>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>http-client</artifactId>
+        <version>4.1.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
-      	<groupId>org.springframework</groupId>
-      	<artifactId>spring-web</artifactId>
-      	<version>5.0.6.RELEASE</version>
-      	<scope>test</scope>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>5.0.6.RELEASE</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
-      	<groupId>org.apache.httpcomponents</groupId>
-      	<artifactId>httpclient</artifactId>
-      	<version>4.5.5</version>
-      	<scope>test</scope>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.5</version>
+        <scope>test</scope>
       </dependency>
       <!-- junit testing -->
       <dependency>
@@ -172,7 +174,7 @@ Contributor(s):
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
+
   <dependencies>
     <!-- logging -->
     <dependency>
@@ -210,9 +212,9 @@ Contributor(s):
         </plugin>
         <!-- checkstyle configuration -->
         <plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-checkstyle-plugin</artifactId>
-	  <version>3.1.2</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.1.2</version>
           <dependencies>
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
@@ -222,7 +224,7 @@ Contributor(s):
             <dependency>
               <groupId>eu.telecomsudparis.csc</groupId>
               <artifactId>tsp-csc-config-checkstyle</artifactId>
-	      <version>1.1-SNAPSHOT</version>
+              <version>1.1-SNAPSHOT</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -278,7 +280,7 @@ Contributor(s):
         <version>2.19.1</version>
         <configuration>
           <enableAssertions>true</enableAssertions>
-	  <reuseForks>false</reuseForks>
+          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
       <!-- uncomment the following to include integration tests in mvn install -->
@@ -333,8 +335,8 @@ Contributor(s):
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-      	  <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-      	</configuration>
+          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+        </configuration>
         <version>3.4.1</version>
         <executions>
           <execution>
@@ -353,15 +355,15 @@ Contributor(s):
       </plugin>
       <!-- checkstyle configuration -->
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-checkstyle-plugin</artifactId>
-	<configuration>
-	  <configLocation>config/checkstyle/sun_checks_adapted_to_tsp_csc_pour_eclipse_2019_09.xml</configLocation>
-	  <encoding>UTF-8</encoding>
-	  <consoleOutput>true</consoleOutput>
-	  <failsOnError>false</failsOnError>
-	  <linkXRef>false</linkXRef>
-	</configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>config/checkstyle/sun_checks_adapted_to_tsp_csc_pour_eclipse_2019_09.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>false</failsOnError>
+          <linkXRef>false</linkXRef>
+        </configuration>
       </plugin>
       <!-- site configuration -->
       <plugin>
@@ -374,7 +376,7 @@ Contributor(s):
       </plugin>
     </plugins>
   </build>
-  
+
   <!-- reports in the maven site -->
   <reporting>
     <plugins>
@@ -408,16 +410,16 @@ Contributor(s):
         </configuration>
       </plugin>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-checkstyle-plugin</artifactId>
-	<version>3.1.2</version>
-	<configuration>
-	  <configLocation>config/checkstyle/sun_checks_adapted_to_tsp_csc_pour_eclipse_2019_09.xml</configLocation>
-	  <encoding>UTF-8</encoding>
-	  <consoleOutput>true</consoleOutput>
-	  <failsOnError>false</failsOnError>
-	  <linkXRef>false</linkXRef>
-	</configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.2</version>
+        <configuration>
+          <configLocation>config/checkstyle/sun_checks_adapted_to_tsp_csc_pour_eclipse_2019_09.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>false</failsOnError>
+          <linkXRef>false</linkXRef>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>
