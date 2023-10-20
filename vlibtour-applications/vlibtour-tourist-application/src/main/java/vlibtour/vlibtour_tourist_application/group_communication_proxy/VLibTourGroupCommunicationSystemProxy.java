@@ -40,10 +40,11 @@ public class VLibTourGroupCommunicationSystemProxy {
     private String topic;
     private Connection connection;
     private Channel channel;
-    private String partialRoutingKey;
+    private String userRoutingKey;
     private Consumer consumer;
+    private String queueName;
 
-    public VLibTourGroupCommunicationSystemProxy(final String topic, final String partialRoutingKey)
+    public VLibTourGroupCommunicationSystemProxy(final String topic, final String userRoutingKey)
             throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -51,14 +52,14 @@ public class VLibTourGroupCommunicationSystemProxy {
         channel = connection.createChannel();
         channel.exchangeDeclare(topic, BuiltinExchangeType.TOPIC);
         this.topic = topic;
-        this.partialRoutingKey = partialRoutingKey;
+        this.userRoutingKey = userRoutingKey;
     }
 
     public void publish(final String message, final String specificRoutingKey) throws IOException {
         /**
-         * specificRoutingKey could be either ".all.position" or ".userId.sms"
+         * specificRoutingKey could be either "all.position" or "userId.sms"
          */
-        channel.basicPublish(topic, topic + ".all.position", null, message.getBytes());
+        channel.basicPublish(topic, topic + "." + specificRoutingKey, null, message.getBytes());
     }
 
     public void close() throws IOException, TimeoutException {
@@ -67,14 +68,13 @@ public class VLibTourGroupCommunicationSystemProxy {
     }
 
     public void setConsumer(Consumer consumer) throws IOException {
-        String queueName = channel.queueDeclare().getQueue();
+        this.queueName = channel.queueDeclare().getQueue();
         channel.queueBind(queueName, topic, "*.all.#");
-        channel.queueBind(queueName, topic, "*." + partialRoutingKey + ".#"); // SMS for example
+        channel.queueBind(queueName, topic, "*." + userRoutingKey + ".#"); // SMS for example
         this.consumer = consumer;
     }
 
     public void startConsuming() throws IOException {
-        String queueName = channel.queueDeclare().getQueue();
         channel.basicConsume(queueName, true, consumer);
     }
 
