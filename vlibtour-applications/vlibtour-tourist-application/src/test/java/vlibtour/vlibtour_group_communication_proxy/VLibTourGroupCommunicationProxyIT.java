@@ -22,9 +22,7 @@ Contributor(s):
  */
 package vlibtour.vlibtour_group_communication_proxy;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
@@ -43,8 +41,6 @@ import vlibtour.vlibtour_lobby_room_api.InAMQPPartException;
 import vlibtour.vlibtour_tourist_application.group_communication_proxy.VLibTourGroupCommunicationSystemProxy;
 
 class VLibTourGroupCommunicationProxyIT {
-
-	@SuppressWarnings("unused")
 	private static Client c;
 
 	@BeforeAll
@@ -85,7 +81,7 @@ class VLibTourGroupCommunicationProxyIT {
 
 		producerProxy.publish("Hello world !", "all.position");
 		producerProxy.publish("Miam miam ", "all.position");
-		
+
 		Assertions.assertEquals(0, nbMessagesReceived);
 		receiverProxy.startConsuming();
 		Thread.sleep(500);

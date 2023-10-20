@@ -29,6 +29,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 
+import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.tools.jsonrpc.JsonRpcException;
 
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
@@ -185,6 +187,7 @@ public class VLibTourVisitTouristApplication {
 		// instantiate the group communication proxy, which opens a connection, a
 		// channel and create an exchange, a queue, etc.
 		// groupCommProxy = xxx
+		groupCommProxy = new VLibTourGroupCommunicationSystemProxy(gcsId, userId);
 
 		// TODO GROUPCOMM
 		// set the consumer of RabbitMQ messages of the group communication system (via
@@ -196,7 +199,41 @@ public class VLibTourVisitTouristApplication {
 		// (Please, do not implement all these parts in the handleDelivery
 		// method of the anonymous class, but create instance methods!)
 		// - set the consumer, etc.
+		DefaultConsumer consumer = new DefaultConsumer(groupCommProxy.getChannel()) {
+			@Override
+			public void handleDelivery(String consumerTag, com.rabbitmq.client.Envelope envelope,
+					com.rabbitmq.client.AMQP.BasicProperties properties, byte[] body) throws IOException {
+				String message = new String(body, "UTF-8");
+				VLIBTOUR.info("{}", () -> " [x] Received '" + envelope.getRoutingKey() + "':'" + message + "'");
+				// TODO GROUPCOMM
+				// call the method of the tourist application that implements the functionality
+				// of the tourist application
+				// - get members' new position
+				// - check whether all the members have reached the next POI
+				// - etc.
+				// Check if rounting key is a position
+				if (envelope.getRoutingKey().contains("position")) {
+					// Create a UserPosition object from the body
+					Position userPosition = Position.GSON.fromJson(message, Position.class);
+					String userId = envelope.getRoutingKey().split("\\.")[0];
+					try {
+						onReceivePosition(userPosition, userId);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		groupCommProxy.setConsumer(consumer);
 
+	}
+
+	public static void onReceivePosition(Position userPosition, String userId) throws InterruptedException {
+		System.out.println(userId + " " + userPosition.getName());
+		MapMarkerDot userDot = mapDots.get(userId);
+		MapHelper.moveTouristOnMap(userDot, userPosition);
+		map.repaint();
+		Thread.sleep(LONG_DURATION);
 	}
 
 	/**
@@ -275,7 +312,6 @@ public class VLibTourVisitTouristApplication {
 		// abuse of language, the group communication system
 		String gcsId = tourId + VLibTourLobbyService.GROUP_TOUR_USER_DELIMITER + groupId;
 		// instantiate the VLibTourVisitTouristApplication
-		@SuppressWarnings("unused")
 		final VLibTourVisitTouristApplication client = new VLibTourVisitTouristApplication(tourId, gcsId, userId,
 				isInitiator);
 		final long shortDuration = 1000;
@@ -330,6 +366,7 @@ public class VLibTourVisitTouristApplication {
 		// TODO GROUPCOMM
 		// start the consumption of messages (e.g. positions of group members)
 		// from the group communication system
+		client.groupCommProxy.startConsuming();
 
 		// TODO GROUPCOMM and VISITEMULATION
 		Thread.sleep(LONG_DURATION * 5);
@@ -337,20 +374,21 @@ public class VLibTourVisitTouristApplication {
 		while (userDot != null) {
 			Position nextPOIPosition = visitEmulationProxy.getNextPOIPosition(userId);
 			while (true) {
-
 				Position currentPositionInPath = visitEmulationProxy.stepInCurrentPath(userId);
+				// When steping in path, publish the position
+				client.groupCommProxy.publish(Position.GSON.toJson(currentPositionInPath),
+						VLibTourGroupCommunicationSystemProxy.BROADCAST_POSITION);
 				System.out.println(currentPositionInPath.getName());
-				MapHelper.moveTouristOnMap(userDot, currentPositionInPath);
-				map.repaint();
-				Thread.sleep(LONG_DURATION);
+
 				if (currentPositionInPath.getName().equals(nextPOIPosition.getName())) {
-					break;
+					break; // Reached the next POI
 				}
 
 			}
+
 			Position nextPOI = visitEmulationProxy.stepsInVisit(userId);
 			if (nextPOI.getName().equals(nextPOIPosition.getName())) {
-				break;
+				break; // End of the visit
 			}
 		}
 		// loop until the end of the visit is detected
@@ -367,6 +405,7 @@ public class VLibTourVisitTouristApplication {
 		// At the end of the loop
 		// lobby room proxy: nothing to close
 		// group communication proxy: close the channel and the connection
+		client.groupCommProxy.close();
 
 		// TODO VISITEMULATION
 		// visit emulation proxy: close

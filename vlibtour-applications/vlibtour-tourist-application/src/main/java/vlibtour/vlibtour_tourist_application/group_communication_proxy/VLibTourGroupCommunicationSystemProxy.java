@@ -44,6 +44,8 @@ public class VLibTourGroupCommunicationSystemProxy {
     private Consumer consumer;
     private String queueName;
 
+    public static String BROADCAST_POSITION = "all.position";
+
     public VLibTourGroupCommunicationSystemProxy(final String topic, final String userRoutingKey)
             throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
@@ -59,7 +61,7 @@ public class VLibTourGroupCommunicationSystemProxy {
         /**
          * specificRoutingKey could be either "all.position" or "userId.sms"
          */
-        channel.basicPublish(topic, topic + "." + specificRoutingKey, null, message.getBytes());
+        channel.basicPublish(topic, userRoutingKey + "." + specificRoutingKey, null, message.getBytes());
     }
 
     public void close() throws IOException, TimeoutException {
@@ -69,8 +71,8 @@ public class VLibTourGroupCommunicationSystemProxy {
 
     public void setConsumer(Consumer consumer) throws IOException {
         this.queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, topic, "*.all.#");
-        channel.queueBind(queueName, topic, "*." + userRoutingKey + ".#"); // SMS for example
+        channel.queueBind(queueName, userRoutingKey, "*.all.#");
+        channel.queueBind(queueName, userRoutingKey, "*." + userRoutingKey + ".#"); // SMS for example
         this.consumer = consumer;
     }
 
