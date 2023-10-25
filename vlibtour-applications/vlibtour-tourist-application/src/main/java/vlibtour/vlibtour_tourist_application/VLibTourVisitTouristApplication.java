@@ -31,6 +31,9 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -166,10 +169,14 @@ public class VLibTourVisitTouristApplication {
 	 *                                         channel, client before the RPC to the
 	 *                                         lobby room.
 	 * @throws InterruptedException            thread interrupted in call sleep.
+	 * @throws URISyntaxException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
 	 */
 	public VLibTourVisitTouristApplication(final String tourId, final String gcsId, final String userId,
 			final boolean isInitiator) throws InAMQPPartException, VlibTourTourManagementException, IOException,
-			JsonRpcException, TimeoutException, InterruptedException {
+			JsonRpcException, TimeoutException, InterruptedException, KeyManagementException, NoSuchAlgorithmException,
+			URISyntaxException {
 		if (tourId == null || tourId.equals("")) {
 			throw new IllegalArgumentException("tourId cannot be null");
 		}
@@ -189,7 +196,9 @@ public class VLibTourVisitTouristApplication {
 		// instantiate the group communication proxy, which opens a connection, a
 		// channel and create an exchange, a queue, etc.
 		// groupCommProxy = xxx
-		groupCommProxy = new VLibTourGroupCommunicationSystemProxy(gcsId, userId);
+
+		String uri = "amqp://" + "Joe" + ":" + "motdepasse" + "@" + "localhost" + ":" + "5672" + "/" + "vhost";
+		groupCommProxy = new VLibTourGroupCommunicationSystemProxy(gcsId, userId, uri);
 
 		// TODO GROUPCOMM
 		// set the consumer of RabbitMQ messages of the group communication system (via

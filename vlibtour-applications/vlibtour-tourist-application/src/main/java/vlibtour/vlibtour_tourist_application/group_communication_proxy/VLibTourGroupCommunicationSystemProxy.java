@@ -22,6 +22,9 @@ Contributor(s):
 package vlibtour.vlibtour_tourist_application.group_communication_proxy;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.BuiltinExchangeType;
@@ -46,10 +49,12 @@ public class VLibTourGroupCommunicationSystemProxy {
 
     public static String BROADCAST_POSITION = "all.position";
 
-    public VLibTourGroupCommunicationSystemProxy(final String topic, final String userRoutingKey)
-            throws IOException, TimeoutException {
+    public VLibTourGroupCommunicationSystemProxy(final String topic, final String userRoutingKey, String uri)
+            throws IOException, TimeoutException, KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
+
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setUri(uri);
+        
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.exchangeDeclare(topic, BuiltinExchangeType.TOPIC);

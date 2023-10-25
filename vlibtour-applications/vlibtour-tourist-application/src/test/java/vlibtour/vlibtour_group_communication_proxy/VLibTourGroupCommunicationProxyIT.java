@@ -25,6 +25,8 @@ package vlibtour.vlibtour_group_communication_proxy;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -50,18 +52,31 @@ class VLibTourGroupCommunicationProxyIT {
 		// (2) the lobby-room server is already started, connected to the same exchange,
 		// and ready to receive messages
 		c = new Client(new ClientParameters().url("http://127.0.0.1:15672/api/").username("guest").password("guest"));
+		new ProcessBuilder("docker", "exec", "rabbitmq", "rabbitmqctl", "add_vhost", "vhost").inheritIO().start()
+				.waitFor();
+		new ProcessBuilder("docker", "exec", "rabbitmq", "rabbitmqctl", "add_user", "Joe", "motdepasse")
+				.inheritIO().start().waitFor();
+		new ProcessBuilder("docker", "exec", "rabbitmq", "rabbitmqctl", "set_permissions", "-p", "vhost", "Joe", ".*",
+				".*",
+				".*")
+				.inheritIO().start().waitFor();
+
 		Thread.sleep(1000);
+
 	}
 
 	int nbMessagesReceived = 0;
 
 	@Test
-	void test() throws IOException, TimeoutException, InterruptedException, ExecutionException, InAMQPPartException {
+	void test() throws IOException, TimeoutException, InterruptedException, ExecutionException, InAMQPPartException,
+			KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
 		String topic = "0"; // groupId
 		String consumerPartialRoutingKey = "0"; // userId
 		String producerPartialRoutingKey = "1"; // userId
+		String uri = "amqp://" + "Joe" + ":" + "motdepasse" + "@" + "localhost" + ":" + "5672" + "/" + "vhost";
+
 		VLibTourGroupCommunicationSystemProxy receiverProxy = new VLibTourGroupCommunicationSystemProxy(topic,
-				consumerPartialRoutingKey);
+				consumerPartialRoutingKey, uri);
 		Assertions.assertNotNull(c.getExchanges().stream().filter(q -> q.getName().equals(topic)));
 
 		DefaultConsumer consumer = new DefaultConsumer(receiverProxy.getChannel()) {
@@ -75,7 +90,7 @@ class VLibTourGroupCommunicationProxyIT {
 			};
 		};
 		VLibTourGroupCommunicationSystemProxy producerProxy = new VLibTourGroupCommunicationSystemProxy(topic,
-				producerPartialRoutingKey);
+				producerPartialRoutingKey, uri);
 
 		receiverProxy.setConsumer(consumer);
 

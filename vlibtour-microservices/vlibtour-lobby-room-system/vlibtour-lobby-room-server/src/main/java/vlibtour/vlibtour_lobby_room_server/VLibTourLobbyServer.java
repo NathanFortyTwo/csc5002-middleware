@@ -21,6 +21,8 @@ Contributor(s):
  */
 package vlibtour.vlibtour_lobby_room_server;
 
+import com.rabbitmq.client.ConnectionFactory;
+
 import vlibtour.vlibtour_lobby_room_api.InAMQPPartException;
 import vlibtour.vlibtour_lobby_room_api.VLibTourLobbyService;
 
@@ -50,7 +52,13 @@ public class VLibTourLobbyServer implements Runnable, VLibTourLobbyService {
 
 	@Override
 	public String createGCSAndJoinIt(final String gcsId, final String userId) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost("localhost");
+		String vhost = gcsId;
+		String password = "guest";
+		String uri = "amqp://" + userId + ":" + password + "@" + factory.getHost() + ":" + factory.getPort() + "/"
+				+ vhost;
+		return uri;
 	}
 
 	@Override

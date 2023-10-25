@@ -21,10 +21,16 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tourist_application.lobby_room_proxy;
 
+import com.rabbitmq.client.ConnectionFactory;
+
 /**
  * The AMQP/RabbitMQ Proxy (for clients) of the Lobby Room Server.
  * 
  * @author Denis Conan
  */
 public final class VLibTourLobbyRoomProxy {
+
+    public VLibTourLobbyRoomProxy() {
+
+    }
 }
