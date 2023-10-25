@@ -71,8 +71,8 @@ public class VLibTourGroupCommunicationSystemProxy {
 
     public void setConsumer(Consumer consumer) throws IOException {
         this.queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, userRoutingKey, "*.all.#");
-        channel.queueBind(queueName, userRoutingKey, "*." + userRoutingKey + ".#"); // SMS for example
+        channel.queueBind(queueName, topic, "*.all.#");
+        channel.queueBind(queueName, topic, "*." + userRoutingKey + ".#"); // SMS for example
         this.consumer = consumer;
     }
 

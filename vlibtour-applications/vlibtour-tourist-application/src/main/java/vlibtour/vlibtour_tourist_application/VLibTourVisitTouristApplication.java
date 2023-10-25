@@ -85,8 +85,11 @@ public class VLibTourVisitTouristApplication {
 	/**
 	 * the dots of the tourists on the map.
 	 */
-	@SuppressWarnings("unused")
 	private static Map<String, MapMarkerDot> mapDots;
+	/**
+	 * the position of the tourists on the map.
+	 */
+	private static Map<String, Position> mapPositions;
 	/**
 	 * the user identifier of the tourist application.
 	 */
@@ -108,7 +111,6 @@ public class VLibTourVisitTouristApplication {
 	 * delegation to the proxy of type
 	 * {@link vlibtour.vlibtour_tourist_application.group_communication_proxy.VLibTourGroupCommunicationSystemProxy}.
 	 */
-	@SuppressWarnings("unused")
 	private VLibTourGroupCommunicationSystemProxy groupCommProxy;
 	/**
 	 * delegation to the proxy of type
@@ -217,7 +219,7 @@ public class VLibTourVisitTouristApplication {
 					Position userPosition = Position.GSON.fromJson(message, Position.class);
 					String userId = envelope.getRoutingKey().split("\\.")[0];
 					try {
-						onReceivePosition(userPosition, userId);
+						onReceivePosition(userPosition, userId, isInitiator);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -228,11 +230,14 @@ public class VLibTourVisitTouristApplication {
 
 	}
 
-	public static void onReceivePosition(Position userPosition, String userId) throws InterruptedException {
-		System.out.println(userId + " " + userPosition.getName());
-		MapMarkerDot userDot = mapDots.get(userId);
-		MapHelper.moveTouristOnMap(userDot, userPosition);
-		map.repaint();
+	public static void onReceivePosition(Position userPosition, String userId, Boolean isInitiator)
+			throws InterruptedException {
+		mapPositions.put(userId, userPosition); // Update the position of the user
+		if (isInitiator) {
+			MapMarkerDot userDot = mapDots.get(userId);
+			MapHelper.moveTouristOnMap(userDot, userPosition);
+			map.repaint();
+		}
 		Thread.sleep(LONG_DURATION);
 	}
 
@@ -269,6 +274,7 @@ public class VLibTourVisitTouristApplication {
 					"For now, we only know the groupId " + ExampleOfAVisitWithTwoTourists.DALTON_GROUP_ID);
 		}
 		mapDots = new java.util.HashMap<>();
+		mapPositions = new java.util.HashMap<>();
 		Set<String> group = ExampleOfAVisitWithTwoTourists.DALTON_GROUP;
 		VLIBTOUR.info("{}", () -> userId + "'s application is starting");
 		// instantiate the tour management proxy in order to get the list of POIs of the
@@ -358,6 +364,7 @@ public class VLibTourVisitTouristApplication {
 						username, startingPosition);
 
 				mapDots.put(username, userDot);
+				mapPositions.put(username, startingPosition);
 			}
 			map.repaint();
 			// wait for painting the map
@@ -369,22 +376,39 @@ public class VLibTourVisitTouristApplication {
 		client.groupCommProxy.startConsuming();
 
 		// TODO GROUPCOMM and VISITEMULATION
-		Thread.sleep(LONG_DURATION * 5);
-		MapMarkerDot userDot = mapDots.get(userId);
-		while (userDot != null) {
+		int count = 0;
+		Thread.sleep(LONG_DURATION * 2);
+		while (true) {
 			Position nextPOIPosition = visitEmulationProxy.getNextPOIPosition(userId);
 			while (true) {
 				Position currentPositionInPath = visitEmulationProxy.stepInCurrentPath(userId);
 				// When steping in path, publish the position
 				client.groupCommProxy.publish(Position.GSON.toJson(currentPositionInPath),
 						VLibTourGroupCommunicationSystemProxy.BROADCAST_POSITION);
-				System.out.println(currentPositionInPath.getName());
+				System.out.println("[" + count++ + "] " + userId + " is at " + currentPositionInPath.getName());
 
 				if (currentPositionInPath.getName().equals(nextPOIPosition.getName())) {
 					break; // Reached the next POI
 				}
 
 			}
+
+			// Wait for all users to be on the next POI before moving to the next POI
+			while (true) {
+				boolean allUsersOnNextPOI = true;
+				for (String username : group) {
+					Position userPosition = mapPositions.get(username);
+					if (!userPosition.equals(nextPOIPosition)) {
+						allUsersOnNextPOI = false;
+						break;
+					}
+				}
+				if (allUsersOnNextPOI) {
+					break;
+				}
+				// System.out.println(userId + " is waiting for all users to be on the next POI");
+			}
+			Thread.sleep(LONG_DURATION);
 
 			Position nextPOI = visitEmulationProxy.stepsInVisit(userId);
 			if (nextPOI.getName().equals(nextPOIPosition.getName())) {
