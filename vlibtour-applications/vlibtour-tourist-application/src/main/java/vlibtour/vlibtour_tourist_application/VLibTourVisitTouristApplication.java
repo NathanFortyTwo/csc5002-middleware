@@ -238,7 +238,6 @@ public class VLibTourVisitTouristApplication {
 			MapHelper.moveTouristOnMap(userDot, userPosition);
 			map.repaint();
 		}
-		Thread.sleep(LONG_DURATION);
 	}
 
 	/**
@@ -364,19 +363,20 @@ public class VLibTourVisitTouristApplication {
 						username, startingPosition);
 
 				mapDots.put(username, userDot);
-				mapPositions.put(username, startingPosition);
 			}
 			map.repaint();
 			// wait for painting the map
 			Thread.sleep(LONG_DURATION);
 		}
+		// Fill map positions
+		group.forEach(username -> mapPositions.put(username, startingPosition));
+
 		// TODO GROUPCOMM
 		// start the consumption of messages (e.g. positions of group members)
 		// from the group communication system
 		client.groupCommProxy.startConsuming();
 
 		// TODO GROUPCOMM and VISITEMULATION
-		int count = 0;
 		Thread.sleep(LONG_DURATION * 2);
 		while (true) {
 			Position nextPOIPosition = visitEmulationProxy.getNextPOIPosition(userId);
@@ -385,7 +385,7 @@ public class VLibTourVisitTouristApplication {
 				// When steping in path, publish the position
 				client.groupCommProxy.publish(Position.GSON.toJson(currentPositionInPath),
 						VLibTourGroupCommunicationSystemProxy.BROADCAST_POSITION);
-				System.out.println("[" + count++ + "] " + userId + " is at " + currentPositionInPath.getName());
+				Thread.sleep(LONG_DURATION);
 
 				if (currentPositionInPath.getName().equals(nextPOIPosition.getName())) {
 					break; // Reached the next POI
@@ -406,7 +406,6 @@ public class VLibTourVisitTouristApplication {
 				if (allUsersOnNextPOI) {
 					break;
 				}
-				// System.out.println(userId + " is waiting for all users to be on the next POI");
 			}
 			Thread.sleep(LONG_DURATION);
 
