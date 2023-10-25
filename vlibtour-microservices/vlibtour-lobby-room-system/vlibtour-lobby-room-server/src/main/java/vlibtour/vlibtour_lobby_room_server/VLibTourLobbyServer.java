@@ -21,7 +21,17 @@ Contributor(s):
  */
 package vlibtour.vlibtour_lobby_room_server;
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.tools.jsonrpc.JsonRpcServer;
+
+import org.passay.CharacterRule;
+import org.passay.EnglishCharacterData;
+import org.passay.PasswordGenerator;
 
 import vlibtour.vlibtour_lobby_room_api.InAMQPPartException;
 import vlibtour.vlibtour_lobby_room_api.VLibTourLobbyService;
@@ -39,31 +49,87 @@ import vlibtour.vlibtour_lobby_room_api.VLibTourLobbyService;
  * @author Denis Conan
  */
 public class VLibTourLobbyServer implements Runnable, VLibTourLobbyService {
+	private static String HOST = "localhost";
+	private Connection connection;
+	private Channel channel;
+	/**
+	* the RabbitMQ JSON RPC server.
+	*/
+	private JsonRpcServer rpcServer;
 
 	/**
 	 * creates the lobby room server and the corresponding JSON server object.
 	 * 
 	 * @throws InAMQPPartException the exception thrown in case of a problem in the
 	 *                             AMQP part.
+	 * @throws TimeoutException
+	 * @throws IOException
 	 */
-	public VLibTourLobbyServer() throws InAMQPPartException {
-		throw new UnsupportedOperationException("Not implemented, yet");
+	/**
+	 * Constructor VLibTourLobbyServer() opens the connection to the RabbitMQ broker, 
+	 * creates the exchange for receiving RPC calls, 
+	 * creates the queue, and binds the queue to the exchange. 
+	 * Then, the constructor creates the stub for receiving the RPC calls, 
+	 * i.e. an instance of JsonRpcServer that represents a VLibTourLobbyService 
+	 * and that delegates the calls to an instance of class VLibTourLobbyServer. 
+	 * Since the stub is created in the constructor of our class that implements the interface, 
+	 * we provide the instance this. If we wanted to better manage concurrency 
+	 * (because giving the reference this in the constructor is dangerous), 
+	 * we would add another method for the creation of the stub object (instance of JsonRpcServer).
+	 */
+	public VLibTourLobbyServer() throws InAMQPPartException, IOException, TimeoutException {
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(HOST);
+		connection = factory.newConnection();
+		channel = connection.createChannel();
+		channel.exchangeDeclare(EXCHANGE_NAME, "direct");
+
+		String queueName = channel.queueDeclare().getQueue();
+		channel.queueBind(queueName, EXCHANGE_NAME, BINDING_KEY);
+
+		rpcServer = new JsonRpcServer(channel, queueName, VLibTourLobbyService.class, this);
+	}
+
+	private void createGCS(final String gcsId) throws IOException, InterruptedException {
+		// Create exchange
+		new ProcessBuilder("docker", "exec", "rabbitmq", "rabbitmqctl", "add_vhost", gcsId).inheritIO().start()
+				.waitFor();
 	}
 
 	@Override
 	public String createGCSAndJoinIt(final String gcsId, final String userId) {
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		String vhost = gcsId;
-		String password = "guest";
-		String uri = "amqp://" + userId + ":" + password + "@" + factory.getHost() + ":" + factory.getPort() + "/"
-				+ vhost;
-		return uri;
+		try {
+			createGCS(gcsId);
+			return joinAGroup(gcsId, userId);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private String generatePassword() {
+		CharacterRule lowerCaseRule = new CharacterRule(EnglishCharacterData.LowerCase);
+		CharacterRule upperCaseRule = new CharacterRule(EnglishCharacterData.UpperCase);
+		CharacterRule digitRule = new CharacterRule(EnglishCharacterData.Digit);
+		CharacterRule[] rules = new CharacterRule[] { lowerCaseRule, upperCaseRule, digitRule };
+		String password = new PasswordGenerator().generatePassword(8, rules);
+		return password;
 	}
 
 	@Override
 	public String joinAGroup(final String groupId, final String userId) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		String password = generatePassword();
+		try {
+			new ProcessBuilder("docker", "exec", "rabbitmq", "rabbitmqctl", "add_user", userId, password)
+					.inheritIO().start().waitFor();
+			new ProcessBuilder("docker", "exec", "rabbitmq", "rabbitmqctl", "set_permissions", "-p", groupId, userId,
+					".*", ".*", ".*").inheritIO().start().waitFor();
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return "amqp://" + userId + ":" + password + "@" + HOST + ":" + connection.getPort() + "/"
+				+ groupId;
 	}
 
 	/**
@@ -74,7 +140,17 @@ public class VLibTourLobbyServer implements Runnable, VLibTourLobbyService {
 	 */
 	@Override
 	public void run() {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		try {
+			rpcServer.mainloop();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				close();
+			} catch (InAMQPPartException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -85,7 +161,20 @@ public class VLibTourLobbyServer implements Runnable, VLibTourLobbyService {
 	 *                             AMQP part.
 	 */
 	public void close() throws InAMQPPartException {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		try {
+			if (rpcServer != null) {
+				rpcServer.terminateMainloop();
+			}
+			if (channel != null) {
+				channel.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (IOException | TimeoutException e) {
+			throw new InAMQPPartException("Cannot close the connection to the AMQP broker");
+		}
+
 	}
 
 	/**
@@ -100,6 +189,9 @@ public class VLibTourLobbyServer implements Runnable, VLibTourLobbyService {
 	 *                   apply the strategy "fail fast").
 	 */
 	public static void main(final String[] args) throws Exception {
-		System.out.println("\n\n>>>>>>> TODO implement this method\n\n");
+		System.out.println(" [x] Starting the lobby server");
+		VLibTourLobbyServer lobbyServer = new VLibTourLobbyServer();
+		System.out.println(" [x] Awaiting RPC requests");
+		lobbyServer.run();
 	}
 }

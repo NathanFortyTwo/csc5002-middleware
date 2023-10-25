@@ -21,7 +21,16 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tourist_application.lobby_room_proxy;
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.tools.jsonrpc.JsonRpcClient;
+import com.rabbitmq.tools.jsonrpc.JsonRpcException;
+
+import vlibtour.vlibtour_lobby_room_api.VLibTourLobbyService;
 
 /**
  * The AMQP/RabbitMQ Proxy (for clients) of the Lobby Room Server.
@@ -29,8 +38,49 @@ import com.rabbitmq.client.ConnectionFactory;
  * @author Denis Conan
  */
 public final class VLibTourLobbyRoomProxy {
+    /**
+    * the connection to the RabbitMQ broker.
+    */
+    private Connection connection;
+    /**
+     * the channel for producing and consuming.
+     */
+    private Channel channel;
+    /**
+     * the RabbitMQ JSON RPC client.
+     */
+    private JsonRpcClient jsonRpcClient;
 
-    public VLibTourLobbyRoomProxy() {
+    /**
+     * The service
+     */
+    public VLibTourLobbyService service;
 
+    public VLibTourLobbyRoomProxy() throws IOException, JsonRpcException, TimeoutException {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        connection = factory.newConnection();
+        channel = connection.createChannel();
+        jsonRpcClient = new JsonRpcClient(channel, VLibTourLobbyService.EXCHANGE_NAME,
+                VLibTourLobbyService.BINDING_KEY);
+        service = jsonRpcClient.createProxy(VLibTourLobbyService.class);
+    }
+
+    /**
+    * closes the JSON RPC client, the channel and the connection with the broker.
+    * 
+    * @throws IOException
+    *             communication problem.
+    * @throws TimeoutException
+    *             broker to long to communicate with.
+    */
+    public void close() throws IOException, TimeoutException {
+        jsonRpcClient.close();
+        if (channel != null) {
+            channel.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
     }
 }

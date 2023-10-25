@@ -96,20 +96,17 @@ public class VLibTourVisitTouristApplication {
 	/**
 	 * the user identifier of the tourist application.
 	 */
-	@SuppressWarnings("unused")
 	private String userId;
 	/**
 	 * delegation to the proxy of type
 	 * {@link vlibtour.vlibtour_tourist_application.tour_management_proxy.VLibTourTourManagementProxy}.
 	 */
-	@SuppressWarnings("unused")
 	private static VLibTourTourManagementProxy tourManagementProxy;
 	/**
 	 * delegation to the proxy of type
 	 * {@link vlibtour.vlibtour_tourist_application.lobby_room_proxy.VLibTourLobbyRoomProxy}.
 	 */
-	@SuppressWarnings("unused")
-	private static VLibTourLobbyRoomProxy lobbyRoomProxy = new VLibTourLobbyRoomProxy();
+	private static VLibTourLobbyRoomProxy lobbyRoomProxy;
 	/**
 	 * delegation to the proxy of type
 	 * {@link vlibtour.vlibtour_tourist_application.group_communication_proxy.VLibTourGroupCommunicationSystemProxy}.
@@ -119,7 +116,6 @@ public class VLibTourVisitTouristApplication {
 	 * delegation to the proxy of type
 	 * {@link vlibtour.vlibtour_emulation_visit_proxy.VLibTourVisitEmulationProxy}.
 	 */
-	@SuppressWarnings("unused")
 	private static VisitEmulationProxy visitEmulationProxy;
 
 	/**
@@ -184,44 +180,15 @@ public class VLibTourVisitTouristApplication {
 			throw new IllegalArgumentException("userId cannot be null");
 		}
 		this.userId = userId;
-		// TODO LOBBYROOM and GROUPCOMM
-		// call the lobby room proxy in order to create the AMQP artifacts (e.g. virtual
-		// hosts, users with their corresponding login and password, etc.) of the group
-		// communication system
-		// this call should return the necessary information for the creation of the
-		// group communication proxy
-		// GCSInfo gcsInfo = xxx
+		createGCS(isInitiator, gcsId, userId);
 
-		// TODO GROUPCOMM
-		// instantiate the group communication proxy, which opens a connection, a
-		// channel and create an exchange, a queue, etc.
-		// groupCommProxy = xxx
-
-		String uri = "amqp://" + "Joe" + ":" + "motdepasse" + "@" + "localhost" + ":" + "5672" + "/" + "vhost";
-		groupCommProxy = new VLibTourGroupCommunicationSystemProxy(gcsId, userId, uri);
-
-		// TODO GROUPCOMM
-		// set the consumer of RabbitMQ messages of the group communication system (via
-		// a call to the proxy)
-		// - the consumer is a default consumer
-		// - the handleDelivery method of the consumer implements some of the
-		// functionality of the tourist application, i.e. get members' new position,
-		// check whether all the members have reached the next POI, etc.
-		// (Please, do not implement all these parts in the handleDelivery
-		// method of the anonymous class, but create instance methods!)
-		// - set the consumer, etc.
 		DefaultConsumer consumer = new DefaultConsumer(groupCommProxy.getChannel()) {
 			@Override
 			public void handleDelivery(String consumerTag, com.rabbitmq.client.Envelope envelope,
 					com.rabbitmq.client.AMQP.BasicProperties properties, byte[] body) throws IOException {
 				String message = new String(body, "UTF-8");
 				VLIBTOUR.info("{}", () -> " [x] Received '" + envelope.getRoutingKey() + "':'" + message + "'");
-				// TODO GROUPCOMM
-				// call the method of the tourist application that implements the functionality
-				// of the tourist application
-				// - get members' new position
-				// - check whether all the members have reached the next POI
-				// - etc.
+
 				// Check if rounting key is a position
 				if (envelope.getRoutingKey().contains("position")) {
 					// Create a UserPosition object from the body
@@ -239,7 +206,7 @@ public class VLibTourVisitTouristApplication {
 
 	}
 
-	public static void onReceivePosition(Position userPosition, String userId, Boolean isInitiator)
+	private static void onReceivePosition(Position userPosition, String userId, Boolean isInitiator)
 			throws InterruptedException {
 		mapPositions.put(userId, userPosition); // Update the position of the user
 		if (isInitiator) {
@@ -247,6 +214,21 @@ public class VLibTourVisitTouristApplication {
 			MapHelper.moveTouristOnMap(userDot, userPosition);
 			map.repaint();
 		}
+	}
+
+	private void createGCS(final Boolean isInitiator, final String gcsId, final String userId)
+			throws IOException, InterruptedException, JsonRpcException, TimeoutException, KeyManagementException,
+			NoSuchAlgorithmException, URISyntaxException {
+		String uri;
+		lobbyRoomProxy = new VLibTourLobbyRoomProxy();
+		if (isInitiator == true) {
+			uri = lobbyRoomProxy.service.createGCSAndJoinIt(gcsId, userId);
+		} else {
+			uri = lobbyRoomProxy.service.joinAGroup(gcsId, userId);
+		}
+
+		// Connect to the group communication system
+		groupCommProxy = new VLibTourGroupCommunicationSystemProxy(gcsId, userId, uri);
 	}
 
 	/**
@@ -438,6 +420,7 @@ public class VLibTourVisitTouristApplication {
 		// lobby room proxy: nothing to close
 		// group communication proxy: close the channel and the connection
 		client.groupCommProxy.close();
+		lobbyRoomProxy.close();
 
 		// TODO VISITEMULATION
 		// visit emulation proxy: close
