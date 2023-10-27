@@ -21,6 +21,16 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tour_management_admin_client;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.naming.*;
+
+import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
+import vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService;
+import vlibtour.vlibtour_tour_management_entity.POI;
+import vlibtour.vlibtour_tour_management_entity.Tour;
+
 /**
  * This class defines the administration client of the case study vlibtour.
  * <ul>
@@ -37,13 +47,17 @@ package vlibtour.vlibtour_tour_management_admin_client;
  * @author Denis Conan
  */
 public class VlibTourTourManagementAdminClient {
+	private static VlibTourTourManagementService service;
+
 	/**
 	 * constructs an instance of the administration client.
 	 * 
 	 * @throws Exception the exception thrown by the lookup.
 	 */
 	public VlibTourTourManagementAdminClient() throws Exception {
-		throw new UnsupportedOperationException("Not implemented, yet.");
+		Context myContext = new InitialContext();
+		service = (VlibTourTourManagementService) myContext
+				.lookup("vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService");
 	}
 
 	/**
@@ -54,6 +68,25 @@ public class VlibTourTourManagementAdminClient {
 	 * @throws Exception the exception that can be thrown (none is treated).
 	 */
 	public static void main(final String[] args) throws Exception {
-		throw new UnsupportedOperationException("Not implemented, yet.");
+		new VlibTourTourManagementAdminClient();
+
+		System.out.println("Creating tour for the Dalton");
+
+		Tour tour = new Tour(ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID,
+				"description of " + ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID);
+		tour = service.createTour(tour);
+
+		List<POI> poiList = ExampleOfAVisitWithTwoTourists.POI_POSITIONS_OF_DALTON_VISIT.stream()
+				.map(position -> new POI(
+						position.getName(), position.getDescription(), position.getGpsPosition().getLatitude(),
+						position.getGpsPosition().getLongitude()))
+				.collect(Collectors.toList());
+
+		for (POI poi : poiList) {
+			poi = service.createPoi(poi);
+			service.addPOItoTour(tour.getId(), poi.getId());
+		}
+
+		// Dalton tour as been created
 	}
 }
