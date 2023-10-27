@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -38,6 +37,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -45,6 +45,7 @@ import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.GPSPosition;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
+import vlibtour.vlibtour_visit_emulation_api.VisitEmulationTourInitRequest;
 
 /**
  * This class provides utility methods for the visit of tourists. You are free
@@ -75,14 +76,8 @@ import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
 
 @Path("/visitemulation")
 public final class VisitEmulationServer implements VisitEmulationService {
-	/**
-	 * the visit of the users.
-	 */
-	private static Map<String, List<Position>> visits = new HashMap<>();
-	/**
-	 * the indices in the visits.
-	 */
-	private static Map<String, Integer> currentIndicesInVisits = new HashMap<>();
+	private static Map<String, VisitEmulationTourInfo> visitEmulationTourInfo = new HashMap<>();
+	private static Map<String, String> userIdToTourId = new HashMap<>();
 
 	/**
 	 * public constructor for REST server.
@@ -102,67 +97,57 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * @throws IOException          erreur de communication au niveau du serveur.
 	 */
 	public static void main(final String[] args) throws InterruptedException, IOException {
-		String usage = "USAGE: " + VisitEmulationServer.class.getCanonicalName()
-				+ " groupId (in the demo script, 'Dalton') tourId (in the demo script, 'ParisBigTour')";
-		if (args.length != 2) {
-			throw new IllegalArgumentException(usage);
-		}
-		String groupId = args[0];
-		if (groupId == null || groupId.isBlank()) {
-			throw new IllegalArgumentException("the groupId cannot be null or blank");
-		}
-		String tourId = args[1];
-		if (tourId == null || tourId.isBlank()) {
-			throw new IllegalArgumentException("the tourId cannot be null or blank");
-		}
-		visits = new HashMap<>();
-		currentIndicesInVisits = new HashMap<>();
-		// Generate a graph of positions and inform/set all the clients of/to this graph
-		GraphOfPositionsForEmulation.setAdjacencySets(VisitEmulationServer.initTourWithPOIs());
-		EMULATION.trace("{}", () -> "Graph of positions as adjacency lists = \n>>>>\n"
-				+ VisitEmulationServer.initTourWithPOIs() + "\n<<<<");
-		// set the group of users and the starting positions
-		Set<String> group = null;
-		if (groupId.equals(ExampleOfAVisitWithTwoTourists.DALTON_GROUP_ID)) {
-			group = ExampleOfAVisitWithTwoTourists.DALTON_GROUP;
-			group.stream().forEach(u -> GraphOfPositionsForEmulation.setStartingPosition(u,
-					ExampleOfAVisitWithTwoTourists.DEPARTURE_POSITION));
-		} else {
-			throw new IllegalArgumentException(
-					"For now, we only know the demo group (" + ExampleOfAVisitWithTwoTourists.DALTON_GROUP_ID + ")");
-		}
-		// set the visit and start the visit for the users
-		List<Position> visit = null;
-		if (tourId.equals(ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID)) {
-			visit = ExampleOfAVisitWithTwoTourists.POI_POSITIONS_OF_DALTON_VISIT;
-			for (String user : group) {
-				visits.put(user, visit);
-			}
-			if (EMULATION.isDebugEnabled()) {
-				group.stream().forEach(u -> EMULATION.debug("{}", () -> u + ": visit = "
-						+ visits.get(u).stream().map(Position::getName).collect(Collectors.joining(","))));
-			}
-			//! FIXME visits must contain u
-			group.stream().forEach(u -> {
-				currentIndicesInVisits.put(u, 0);
-				GraphOfPositionsForEmulation.setAPathTo(u, visits.get(u).get(0));
-			});
-		} else {
-			throw new IllegalArgumentException(
-					"For now, we only know the demo tour (" + ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID + ")");
-		}
 		// create a resource config that scans for JAX-RS resources and providers
 		// in the server package
 		final ResourceConfig rc = new ResourceConfig().packages(VisitEmulationServer.class.getPackage().getName());
 		// create and start a new instance of grizzly http server
 		// exposing the Jersey application at BASE_URI_WEB_SERVER
 		final HttpServer server = GrizzlyHttpServerFactory
-				.createHttpServer(URI.create(ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER), rc);
+				.createHttpServer(URI.create(BASE_URI_WEB_SERVER), rc);
 		EMULATION.debug("{}", () -> String.format("Jersey app started with WADL available at " + "%sapplication.wadl",
-				ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER));
+				BASE_URI_WEB_SERVER));
 		Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
 		server.start();
 		Thread.currentThread().join();
+	}
+
+	@POST
+	@Path("/initATourForAGroup")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Position initATourForAGroup(VisitEmulationTourInitRequest request) {
+		String tourId = request.getTourId();
+		String userId = request.getUserId();
+		List<Position> POIs = request.getPOIs();
+
+		if (visitEmulationTourInfo.containsKey(tourId)) {
+			// Tour already initialised, check for user in tour
+			if (userIdToTourId.containsKey(userId)) {
+				// User already in tour return first position
+				return visitEmulationTourInfo.get(tourId).getGraphOfPositionsForEmulation()
+						.getCurrentPosition(userId);
+			}
+			// Else we will add the user to the tour
+		} else {
+			// Tour not initialised, initialise it
+			GraphOfPositionsForEmulation graph = new GraphOfPositionsForEmulation();
+			Map<String, List<Position>> visits = new HashMap<>();
+			Map<String, Integer> currentIndicesInVisits = new HashMap<>();
+
+			graph.setAdjacencySets(VisitEmulationServer.initTourWithPOIs(graph));
+			System.out.println("Graph initialised");
+			visitEmulationTourInfo.put(tourId, new VisitEmulationTourInfo(graph, currentIndicesInVisits, visits));
+		}
+
+		// Add user to tour
+		userIdToTourId.put(userId, tourId);
+		visitEmulationTourInfo.get(tourId).getGraphOfPositionsForEmulation().setStartingPosition(userId,
+				DEFAULT_DEPARTURE_POSITION);
+		visitEmulationTourInfo.get(tourId).getVisits().put(userId, POIs);
+		visitEmulationTourInfo.get(tourId).getCurrentIndicesInVisits().put(userId, 0);
+		visitEmulationTourInfo.get(tourId).getGraphOfPositionsForEmulation().setAPathTo(userId, POIs.get(0));
+
+		return visitEmulationTourInfo.get(tourId).getGraphOfPositionsForEmulation().getCurrentPosition(userId);
 	}
 
 	/**
@@ -177,62 +162,62 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	 * 
 	 * @return the graph.
 	 */
-	static Map<Position, Set<Position>> initTourWithPOIs() {
+	static Map<Position, Set<Position>> initTourWithPOIs(
+			final GraphOfPositionsForEmulation graphOfPositionsForEmulation) {
 		Map<Position, Set<Position>> adjacencyLists = new HashMap<>();
 
 		// Create positions for Points of Interest (POIs)
 		Position[] poiPositions = {
-				new Position(String.valueOf(1), new GPSPosition(48.869301, 2.3450524), "Musée Pooja Namo"),
-				new Position(String.valueOf(2), new GPSPosition(48.8738596, 2.3320555), "Elysée"),
-				new Position(String.valueOf(3), new GPSPosition(48.8754451, 2.3196203), "Place Saint Augustin"),
-				ExampleOfAVisitWithTwoTourists.POSITION4,
-				new Position(String.valueOf(5), new GPSPosition(48.870998, 2.3472050), "Bonne Nouvelle"),
-				new Position(String.valueOf(6), new GPSPosition(48.8695756, 2.352890), "Strasbourg Saint-Denis"),
-				new Position(String.valueOf(7), new GPSPosition(48.8674807, 2.33698), "La Bourse"),
-				new Position(String.valueOf(8), new GPSPosition(48.8687025, 2.3464083), "43, rue de Cléry"),
-				new Position(String.valueOf(9), new GPSPosition(48.867572, 2.353312), "123, bd Sébastopol"),
-				new Position(String.valueOf(10), new GPSPosition(48.8673138, 2.3427597), "37, rue du Mail"),
-				ExampleOfAVisitWithTwoTourists.POSITION11,
-				new Position(String.valueOf(12), new GPSPosition(48.864414, 2.351565), "26, rue de Turbigo"),
-				new Position(String.valueOf(13), new GPSPosition(48.865320, 2.338845), "33, rue de Valois"),
-				new Position(String.valueOf(14), new GPSPosition(48.863824, 2.348924), "14, rue de Turbigo"),
-				ExampleOfAVisitWithTwoTourists.POSITION15,
-				new Position(String.valueOf(16), new GPSPosition(48.862928, 2.345094), "Jardin Nelson Mandela"),
-				new Position(String.valueOf(17), new GPSPosition(48.8637511, 2.3361412), "La Comédie Française"),
-				new Position(String.valueOf(18), new GPSPosition(48.8609335, 2.3385873), "154, rue de Rivoli"),
-				ExampleOfAVisitWithTwoTourists.POSITION19,
-				new Position(String.valueOf(20), new GPSPosition(48.858472, 2.348140), "41, rue de Rivoli"),
-				new Position(String.valueOf(21), new GPSPosition(48.860148, 2.333168), "6 quai François Mitterand"),
-				ExampleOfAVisitWithTwoTourists.POSITION22,
-				new Position(String.valueOf(23), new GPSPosition(48.859618, 2.333050), "Pont du Caroussel"),
-				new Position(String.valueOf(24), new GPSPosition(48.853563, 2.347127),
-						"Parvis de la Cathédrale Notre Dame"),
-				new Position(String.valueOf(25), new GPSPosition(48.859562, 2.329248), "1, rue du Bac"),
-				new Position(String.valueOf(26), new GPSPosition(48.858757, 2.332578), "Pont du Caroussel"),
-				new Position(String.valueOf(27), new GPSPosition(48.8543549, 2.3253203), "rue du Bac"),
-				new Position(String.valueOf(28), new GPSPosition(48.852815, 2.346655), "43, rue de la Bucherie"),
-				new Position(String.valueOf(29), new GPSPosition(48.856075, 2.340424), "1, rue de Nevers"),
-				new Position(String.valueOf(30), new GPSPosition(48.847706, 2.3269443), "rue de Rennes"),
-				new Position(String.valueOf(31), new GPSPosition(48.851410, 2.345840), "Square André-Lefèvre"),
-				new Position(String.valueOf(32), new GPSPosition(48.853762, 2.344292), "Place Saint-Michel"),
-				new Position(String.valueOf(33), new GPSPosition(48.843992, 2.323693), "Église Notre Dame des Champs"),
-				new Position(String.valueOf(34), new GPSPosition(48.849617, 2.344853), "52, rue des Écoles"),
-				new Position(String.valueOf(35), new GPSPosition(48.850380, 2.342704), "26 bd Saint-Michel"),
-				new Position(String.valueOf(36), new GPSPosition(48.840605, 2.324314), "8 rue de la Gaité"),
-				new Position(String.valueOf(37), new GPSPosition(48.843863, 2.338773), "103, bd Saint-Michel"),
-				new Position(String.valueOf(38), new GPSPosition(48.845173, 2.3333816), "Théâtre Odéon"),
-				new Position(String.valueOf(39), new GPSPosition(48.837597, 2.322994), "91 avenue duMaine"),
-				ExampleOfAVisitWithTwoTourists.POSITION40,
-				new Position(String.valueOf(41), new GPSPosition(48.845074, 2.332309), "Odéon"),
-				new Position(String.valueOf(42), new GPSPosition(48.836658, 2.325762), "2, rue Fernat"),
-				new Position(String.valueOf(43), new GPSPosition(48.840069, 2.337088), "Hôpital Val-de-Grace"),
-				new Position(String.valueOf(44), new GPSPosition(48.8425568, 2.3322554), "Observatoire Assas"),
-				new Position(String.valueOf(45), new GPSPosition(48.835549, 2.328830), "21, rue Froidevaux"),
-				new Position(String.valueOf(46), new GPSPosition(48.835436, 2.333569), "Denfert Rochereau"),
-				ExampleOfAVisitWithTwoTourists.POSITION47
+				new Position("Musée Pooja Namo", new GPSPosition(48.869301, 2.3450524)),
+				new Position("Elysée", new GPSPosition(48.8738596, 2.3320555)),
+				new Position("Place Saint Augustin", new GPSPosition(48.8754451, 2.3196203)),
+				new Position("Musée Grévin", new GPSPosition(48.871799, 2.342355)),
+				new Position("Bonne Nouvelle", new GPSPosition(48.870998, 2.3472050)),
+				new Position("Strasbourg Saint-Denis", new GPSPosition(48.8695756, 2.352890)),
+				new Position("La Bourse", new GPSPosition(48.8674807, 2.33698)),
+				new Position("43, rue de Cléry", new GPSPosition(48.8687025, 2.3464083)),
+				new Position("123, bd Sébastopol", new GPSPosition(48.867572, 2.353312)),
+				new Position("37, rue du Mail", new GPSPosition(48.8673138, 2.3427597)),
+				new Position("Jardin du Palais Royal", new GPSPosition(48.866154, 2.338562)),
+				new Position("26, rue de Turbigo", new GPSPosition(48.864414, 2.351565)),
+				new Position("33, rue de Valois", new GPSPosition(48.865320, 2.338845)),
+				new Position("14, rue de Turbigo", new GPSPosition(48.863824, 2.348924)),
+				new Position("Galerie de Valois", new GPSPosition(48.864007, 2.337890)),
+				new Position("Jardin Nelson Mandela", new GPSPosition(48.862928, 2.345094)),
+				new Position("La Comédie Française", new GPSPosition(48.8637511, 2.3361412)),
+				new Position("154, rue de Rivoli", new GPSPosition(48.8609335, 2.3385873)),
+				new Position("Pyramide du Louvre", new GPSPosition(48.860959, 2.335757)),
+				new Position("41, rue de Rivoli", new GPSPosition(48.858472, 2.348140)),
+				new Position("6 quai François Mitterand", new GPSPosition(48.860148, 2.333168)),
+				new Position("Île de la Cité", new GPSPosition(48.855201, 2.347953)),
+				new Position("Pont du Caroussel", new GPSPosition(48.859618, 2.333050)),
+				new Position("Parvis de la Cathédrale Notre Dame", new GPSPosition(48.853563, 2.347127)),
+				new Position("1, rue du Bac", new GPSPosition(48.859562, 2.329248)),
+				new Position("Pont du Caroussel", new GPSPosition(48.858757, 2.332578)),
+				new Position("rue du Bac", new GPSPosition(48.8543549, 2.3253203)),
+				new Position("43, rue de la Bucherie", new GPSPosition(48.852815, 2.346655)),
+				new Position("1, rue de Nevers", new GPSPosition(48.856075, 2.340424)),
+				new Position("rue de Rennes", new GPSPosition(48.847706, 2.3269443)),
+				new Position("Square André-Lefèvre", new GPSPosition(48.851410, 2.345840)),
+				new Position("Place Saint-Michel", new GPSPosition(48.853762, 2.344292)),
+				new Position("Église Notre Dame des Champs", new GPSPosition(48.843992, 2.323693)),
+				new Position("52, rue des Écoles", new GPSPosition(48.849617, 2.344853)),
+				new Position("26 bd Saint-Michel", new GPSPosition(48.850380, 2.342704)),
+				new Position("8 rue de la Gaité", new GPSPosition(48.840605, 2.324314)),
+				new Position("103, bd Saint-Michel", new GPSPosition(48.843863, 2.338773)),
+				new Position("Théâtre Odéon", new GPSPosition(48.845173, 2.3333816)),
+				new Position("91 avenue duMaine", new GPSPosition(48.837597, 2.322994)),
+				new Position("Port-Royal", new GPSPosition(48.839795, 2.337056)),
+				new Position("Odéon", new GPSPosition(48.845074, 2.332309)),
+				new Position("2, rue Fernat", new GPSPosition(48.836658, 2.325762)),
+				new Position("Hôpital Val-de-Grace", new GPSPosition(48.840069, 2.337088)),
+				new Position("Observatoire Assas", new GPSPosition(48.8425568, 2.3322554)),
+				new Position("21, rue Froidevaux", new GPSPosition(48.835549, 2.328830)),
+				new Position("Denfert Rochereau", new GPSPosition(48.835436, 2.333569)),
+				new Position("Les catacombes", new GPSPosition(48.833566, 2.332416))
 		};
 
-		int[][] alternativePaths = {
+		int[][] paths = {
 				{ 1, 6 },
 				{ 2, 3, 4, 5, 6, 9, 12, 14, 16, 18, 19 },
 				{ 4, 7, 11, 13, 15, 17, 19 },
@@ -243,16 +228,24 @@ public final class VisitEmulationServer implements VisitEmulationService {
 		};
 
 		// Add edges for each path
-		for (int[] path : alternativePaths) {
+		for (int[] path : paths) {
 			for (int i = 0; i < path.length - 1; i++) {
 				Position from = poiPositions[path[i] - 1];
 				Position to = poiPositions[path[i + 1] - 1];
 
-				GraphOfPositionsForEmulation.addEdge(adjacencyLists, from, to);
+				graphOfPositionsForEmulation.addEdge(adjacencyLists, from, to);
 			}
 		}
 
 		return adjacencyLists;
+	}
+
+	private GraphOfPositionsForEmulation getUserGraphOfPositionsForEmulation(final String userId) {
+		String tourId = userIdToTourId.get(userId);
+		if (tourId == null) {
+			throw new IllegalArgumentException("user " + userId + " has no tourId");
+		}
+		return visitEmulationTourInfo.get(tourId).getGraphOfPositionsForEmulation();
 	}
 
 	/**
@@ -268,7 +261,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position getNextPOIPosition(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
-		return GraphOfPositionsForEmulation.getNextPOIPosition(user);
+		return getUserGraphOfPositionsForEmulation(user).getNextPOIPosition(user);
 	}
 
 	/**
@@ -282,7 +275,8 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position getCurrentPosition(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
-		return GraphOfPositionsForEmulation.getCurrentPosition(user);
+
+		return getUserGraphOfPositionsForEmulation(user).getCurrentPosition(user);
 	}
 
 	/**
@@ -299,7 +293,7 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position stepInCurrentPath(@PathParam("user") final String user) {
 		// delegates to GraphOfPositionsForEmulation
-		return GraphOfPositionsForEmulation.stepInCurrentPath(user);
+		return getUserGraphOfPositionsForEmulation(user).stepInCurrentPath(user);
 	}
 
 	// the other methods of the API
@@ -316,8 +310,13 @@ public final class VisitEmulationServer implements VisitEmulationService {
 	@Path("/stepsInVisit/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public synchronized Position stepsInVisit(@PathParam("user") final String user) {
-		if (GraphOfPositionsForEmulation.getAdjacencySets() == null
-				|| GraphOfPositionsForEmulation.getAdjacencySets().isEmpty()) {
+		VisitEmulationTourInfo tourInfo = visitEmulationTourInfo.get(userIdToTourId.get(user));
+
+		GraphOfPositionsForEmulation graph = tourInfo.getGraphOfPositionsForEmulation();
+		Map<String, Integer> currentIndicesInVisits = tourInfo.getCurrentIndicesInVisits();
+		Map<String, List<Position>> visits = tourInfo.getVisits();
+
+		if (graph.getAdjacencySets() == null || graph.getAdjacencySets().isEmpty()) {
 			throw new IllegalStateException("There is no graph of positions");
 		}
 		if (visits.get(user) == null) {
@@ -333,7 +332,8 @@ public final class VisitEmulationServer implements VisitEmulationService {
 			EMULATION.info("{}", () -> user + ": already at the end of their visit (no new current path)");
 		} else {
 			currentIndicesInVisits.put(user, currentIndicesInVisits.get(user) + 1);
-			GraphOfPositionsForEmulation.setAPathTo(user, visits.get(user).get(currentIndicesInVisits.get(user)));
+			getUserGraphOfPositionsForEmulation(user).setAPathTo(user,
+					visits.get(user).get(currentIndicesInVisits.get(user)));
 		}
 		return visits.get(user).get(currentIndicesInVisits.get(user));
 	}

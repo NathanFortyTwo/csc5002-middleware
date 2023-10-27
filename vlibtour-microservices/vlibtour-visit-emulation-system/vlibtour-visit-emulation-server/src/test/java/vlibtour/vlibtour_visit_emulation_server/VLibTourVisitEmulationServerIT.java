@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -41,10 +42,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.Position;
+import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
+import vlibtour.vlibtour_visit_emulation_api.VisitEmulationTourInitRequest;
 
 class VLibTourVisitEmulationServerIT {
 	private static Process process;
@@ -71,8 +75,20 @@ class VLibTourVisitEmulationServerIT {
 				VisitEmulationServer.class.getCanonicalName(), "Dalton", "ParisBigTour").inheritIO().start();
 		Thread.sleep(1000);
 		Client client = ClientBuilder.newClient();
-		URI uri = UriBuilder.fromUri(ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER).build();
+		URI uri = UriBuilder.fromUri(VisitEmulationService.BASE_URI_WEB_SERVER).build();
 		service = client.target(uri);
+
+		initTour();
+	}
+
+	static void initTour() {
+		VisitEmulationTourInitRequest body = new VisitEmulationTourInitRequest(
+				ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID, ExampleOfAVisitWithTwoTourists.USER_ID_JOE,
+				ExampleOfAVisitWithTwoTourists.POI_POSITIONS_OF_DALTON_VISIT);
+		Entity<VisitEmulationTourInitRequest> entity = Entity.entity(body, MediaType.APPLICATION_JSON);
+		service
+				.path("visitemulation/initATourForAGroup").request()
+				.accept(MediaType.APPLICATION_JSON).post(entity);
 	}
 
 	@Test

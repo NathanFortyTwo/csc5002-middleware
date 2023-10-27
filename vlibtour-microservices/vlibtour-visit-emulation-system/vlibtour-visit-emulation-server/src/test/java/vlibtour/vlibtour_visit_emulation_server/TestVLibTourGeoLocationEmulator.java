@@ -33,9 +33,12 @@ class TestVLibTourGeoLocationEmulator {
 	private String user2 = "user2";
 	private String user3 = "user3";
 
+	GraphOfPositionsForEmulation graph;
+
 	@BeforeEach
 	void setUp() {
-		GraphOfPositionsForEmulation.setAdjacencySets(VisitEmulationServer.initTourWithPOIs());
+		graph = new GraphOfPositionsForEmulation();
+		graph.setAdjacencySets(VisitEmulationServer.initTourWithPOIs(graph));
 	}
 
 	/**
@@ -61,57 +64,57 @@ class TestVLibTourGeoLocationEmulator {
 	@Test
 	void test() {
 		Position position;
-		GraphOfPositionsForEmulation.setStartingPosition(user1, new Position(String.valueOf(2), null));
-		GraphOfPositionsForEmulation.setStartingPosition(user2, new Position(String.valueOf(2), null));
-		GraphOfPositionsForEmulation.setStartingPosition(user3, new Position(String.valueOf(2), null));
-		GraphOfPositionsForEmulation.setAPathTo(user1, new Position("Musée Grévin", null));
-		GraphOfPositionsForEmulation.setAPathTo(user2, new Position("Pyramide du Louvre", null));
-		GraphOfPositionsForEmulation.setAPathTo(user3, new Position("Les catacombes", null));
-		GraphOfPositionsForEmulation.stepInCurrentPath(user1);
-		position = GraphOfPositionsForEmulation.getCurrentPosition(user1);
+		graph.setStartingPosition(user1, new Position(String.valueOf(2), null));
+		graph.setStartingPosition(user2, new Position(String.valueOf(2), null));
+		graph.setStartingPosition(user3, new Position(String.valueOf(2), null));
+		graph.setAPathTo(user1, new Position("Musée Grévin", null));
+		graph.setAPathTo(user2, new Position("Pyramide du Louvre", null));
+		graph.setAPathTo(user3, new Position("Les catacombes", null));
+		graph.stepInCurrentPath(user1);
+		position = graph.getCurrentPosition(user1);
 		Assertions.assertEquals(position, new Position(String.valueOf(3), null));
-		GraphOfPositionsForEmulation.stepInCurrentPath(user1);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user1);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user1);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user2);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
-		GraphOfPositionsForEmulation.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user1);
+		graph.stepInCurrentPath(user1);
+		graph.stepInCurrentPath(user1);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user2);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
+		graph.stepInCurrentPath(user3);
 	}
 }

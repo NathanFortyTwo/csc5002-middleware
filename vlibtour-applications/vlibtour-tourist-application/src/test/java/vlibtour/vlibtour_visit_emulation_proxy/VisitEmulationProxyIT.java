@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,14 +36,20 @@ import org.junit.jupiter.api.Test;
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_tourist_application.visit_emulation_proxy.VisitEmulationProxy;
+import vlibtour.vlibtour_visit_emulation_api.VisitEmulationTourInitRequest;
 
 final class VisitEmulationProxyIT {
 	private static final String user = ExampleOfAVisitWithTwoTourists.USER_ID_JOE;
+	private static final String tour = ExampleOfAVisitWithTwoTourists.DALTON_TOUR_ID;
+	private static final List<Position> pois = ExampleOfAVisitWithTwoTourists.POI_POSITIONS_OF_DALTON_VISIT;
+
 	private static VisitEmulationProxy proxy;
 
 	@BeforeAll
 	static void setUp() throws IOException, InterruptedException, URISyntaxException {
 		proxy = new VisitEmulationProxy();
+		VisitEmulationTourInitRequest body = new VisitEmulationTourInitRequest(tour, user, pois);
+		proxy.initATourForAGroup(body);
 	}
 
 	@Test
@@ -62,7 +70,7 @@ final class VisitEmulationProxyIT {
 			}
 		}
 
-		assertEquals(lastPosition, ExampleOfAVisitWithTwoTourists.POSITION47);
+		assertEquals(lastPosition.getName(), ExampleOfAVisitWithTwoTourists.POSITION47.getName());
 
 	}
 
