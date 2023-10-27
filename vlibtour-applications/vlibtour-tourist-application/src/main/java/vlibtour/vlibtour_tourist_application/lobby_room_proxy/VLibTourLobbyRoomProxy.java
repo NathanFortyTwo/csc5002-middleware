@@ -56,9 +56,18 @@ public final class VLibTourLobbyRoomProxy {
      */
     public VLibTourLobbyService service;
 
-    public VLibTourLobbyRoomProxy() throws IOException, JsonRpcException, TimeoutException {
+    public VLibTourLobbyRoomProxy() throws IOException, JsonRpcException, TimeoutException, InterruptedException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
+        while (connection == null) {
+            try {
+                connection = factory.newConnection();
+            } catch (IOException e) {
+                System.out.println(" [x] Cannot connect to the AMQP broker");
+                System.out.println(" [x] Retrying in 5 seconds");
+                Thread.sleep(5000);
+            }
+        }
         connection = factory.newConnection();
         channel = connection.createChannel();
         jsonRpcClient = new JsonRpcClient(channel, VLibTourLobbyService.EXCHANGE_NAME,

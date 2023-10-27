@@ -77,10 +77,18 @@ public class VLibTourLobbyServer implements Runnable, VLibTourLobbyService {
 	 * (because giving the reference this in the constructor is dangerous), 
 	 * we would add another method for the creation of the stub object (instance of JsonRpcServer).
 	 */
-	public VLibTourLobbyServer() throws InAMQPPartException, IOException, TimeoutException {
+	public VLibTourLobbyServer() throws InAMQPPartException, IOException, TimeoutException, InterruptedException {
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(HOST);
-		connection = factory.newConnection();
+		while (connection == null) {
+			try {
+				connection = factory.newConnection();
+			} catch (IOException e) {
+				System.out.println(" [x] Cannot connect to the AMQP broker");
+				System.out.println(" [x] Retrying in 5 seconds");
+				Thread.sleep(5000);
+			}
+		}
 		channel = connection.createChannel();
 		channel.exchangeDeclare(EXCHANGE_NAME, "direct");
 

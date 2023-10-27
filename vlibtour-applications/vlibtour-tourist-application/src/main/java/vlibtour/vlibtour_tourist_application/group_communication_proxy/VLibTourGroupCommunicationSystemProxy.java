@@ -50,11 +50,21 @@ public class VLibTourGroupCommunicationSystemProxy {
     public static String BROADCAST_POSITION = "all.position";
 
     public VLibTourGroupCommunicationSystemProxy(final String topic, final String userRoutingKey, String uri)
-            throws IOException, TimeoutException, KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
+            throws IOException, TimeoutException, KeyManagementException, NoSuchAlgorithmException, URISyntaxException,
+            InterruptedException {
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(uri);
-        
+        while (connection == null) {
+            try {
+                connection = factory.newConnection();
+            } catch (IOException e) {
+                System.out.println(" [x] Cannot connect to the AMQP broker");
+                System.out.println(" [x] Retrying in 5 seconds");
+                Thread.sleep(5000);
+            }
+        }
+
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.exchangeDeclare(topic, BuiltinExchangeType.TOPIC);
