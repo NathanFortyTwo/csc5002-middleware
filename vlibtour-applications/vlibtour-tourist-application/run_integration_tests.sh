@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 export VLIBTOURISTAPPLICATION=${PWD}
 export VLIBTOURDIR=${PWD}/..
 
@@ -17,12 +16,15 @@ if [ -n "$procNumber" ]; then
     echo "There is an old visit emulation server running; remove proc $procNumber"
     kill -9 "$procNumber"
 fi
-(cd $VLIBTOURISTAPPLICATION/../../vlibtour-microservices/vlibtour-visit-emulation-system/vlibtour-visit-emulation-server; ./start_visit_emulation_server.sh Dalton ParisBigTour)
+(
+    cd $VLIBTOURISTAPPLICATION/../../vlibtour-microservices/vlibtour-visit-emulation-system/vlibtour-visit-emulation-server
+    ./start_visit_emulation_server.sh Dalton ParisBigTour
+)
 # pid to kill at the end in ~/.vlibtour/visit_emulation_server
 sleep 3
 
 # start the rabbitmq server
-if netstat -nlp 2> /dev/null | grep -q "5672"; then
+if docker ps -a 2>/dev/null | grep -q "rabbitmq"; then
     docker stop rabbitmq
     docker rm rabbitmq
 fi
@@ -34,7 +36,10 @@ docker run -itd --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-manage
 sleep 10
 
 # start the lobby room server
-(cd $VLIBTOURISTAPPLICATION/../../vlibtour-microservices/vlibtour-lobby-room-system/vlibtour-lobby-room-server; ./start_lobby_room_server.sh)
+(
+    cd $VLIBTOURISTAPPLICATION/../../vlibtour-microservices/vlibtour-lobby-room-system/vlibtour-lobby-room-server
+    ./start_lobby_room_server.sh
+)
 # pid to kill at the end in ~/.vlibtour/lobby_room_server
 sleep 3
 
