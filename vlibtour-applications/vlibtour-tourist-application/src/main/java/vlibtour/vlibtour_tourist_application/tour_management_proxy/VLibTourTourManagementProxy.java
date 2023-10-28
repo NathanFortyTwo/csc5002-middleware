@@ -25,6 +25,8 @@ import java.util.List;
 
 import javax.naming.*;
 
+import vlibtour.vlibtour_common.GPSPosition;
+import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService;
 import vlibtour.vlibtour_tour_management_entity.POI;
 import vlibtour.vlibtour_tour_management_entity.Tour;
@@ -56,7 +58,7 @@ public final class VLibTourTourManagementProxy {
 
 	/**
 	 * get the tour by its identifier. Observe that the identifier for the search
-	 * is a string while the identifier in the database is an integer.
+	 * is a string corresponding to the name of the tour.
 	 * 
 	 * @param tourId the identifier of the tour.
 	 * @return the tour, as a sequence of POIs.
@@ -100,6 +102,17 @@ public final class VLibTourTourManagementProxy {
 	 */
 	public List<Tour> getListTours() {
 		return vlibtt.getListTours();
+	}
+
+	/**
+	 * @param tourId the identifier of the tour.
+	 * @return List of Postions of tour's POIs
+	 */
+	public List<Position> getPositionsOfTourPOIs(String tourId) {
+		Tour tour = vlibtt.getTour(tourId);
+		return tour.getPOIs().stream().map(poi -> new Position(poi.getName(),
+				new GPSPosition(poi.getLatitude(), poi.getLongitude()), poi.getDescription()))
+				.collect(java.util.stream.Collectors.toList());
 	}
 
 }

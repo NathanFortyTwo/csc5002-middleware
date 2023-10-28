@@ -271,40 +271,11 @@ public class VLibTourVisitTouristApplication {
 		mapPositions = new java.util.HashMap<>();
 		Set<String> group = ExampleOfAVisitWithTwoTourists.DALTON_GROUP;
 		VLIBTOUR.info("{}", () -> userId + "'s application is starting");
-		// instantiate the tour management proxy in order to get the list of POIs of the
-		// tour
-		// TODO TOUR
 
-		// instantiate the tourManagement proxy
-		// tourManagementProxy = new VLibTourTourManagementProxy();
+		tourManagementProxy = new VLibTourTourManagementProxy();
 
-		// TODO TOUR (necessary for the VISITEMULATION)
-		// populate the tour information
-		Tour tour = new Tour(tourId, "description of " + tourId);
-		POI poi1 = new POI(
-				ExampleOfAVisitWithTwoTourists.POSITION4.getName(),
-				ExampleOfAVisitWithTwoTourists.POSITION4.getDescription(),
-				ExampleOfAVisitWithTwoTourists.POSITION4.getGpsPosition().getLatitude(),
-				ExampleOfAVisitWithTwoTourists.POSITION4.getGpsPosition().getLongitude());
-		tour.addPOI(poi1);
-
-		POI poi2 = new POI(
-				ExampleOfAVisitWithTwoTourists.POSITION19.getName(),
-				ExampleOfAVisitWithTwoTourists.POSITION19.getDescription(),
-				ExampleOfAVisitWithTwoTourists.POSITION19.getGpsPosition().getLatitude(),
-				ExampleOfAVisitWithTwoTourists.POSITION19.getGpsPosition().getLongitude());
-		tour.addPOI(poi2);
-
-		POI poi3 = new POI(
-				ExampleOfAVisitWithTwoTourists.POSITION47.getName(),
-				ExampleOfAVisitWithTwoTourists.POSITION47.getDescription(),
-				ExampleOfAVisitWithTwoTourists.POSITION47.getGpsPosition().getLatitude(),
-				ExampleOfAVisitWithTwoTourists.POSITION47.getGpsPosition().getLongitude());
-		tour.addPOI(poi3);
-
-		List<Position> POIPositions = tour.getPOIs().stream().map(poi -> new Position(poi.getName(),
-				new GPSPosition(poi.getLatitude(), poi.getLongitude()), poi.getDescription()))
-				.collect(java.util.stream.Collectors.toList());
+		Tour tour = tourManagementProxy.getTour(tourId);
+		List<Position> POIPositions = tourManagementProxy.getPositionsOfTourPOIs(tourId);
 
 		String gcsId = tourId + VLibTourLobbyService.GROUP_TOUR_USER_DELIMITER + groupId;
 		// instantiate the VLibTourVisitTouristApplication
