@@ -5,7 +5,7 @@ echo -e "\e[1;44m  \e[1;33m =      Integration tests of microservice Lobby Room 
 echo -e "\e[1;44m  \e[1;33m =========================================================== \e[0m "
 
 # start the rabbitmq server
-if netstat -nlp 2> /dev/null | grep -q "5672"; then
+if docker ps -a 2>/dev/null | grep -q "rabbitmq"; then
     docker stop rabbitmq
     docker rm rabbitmq
 fi

@@ -23,7 +23,7 @@ Contributor(s):
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>eu.telecomsudparis.vlibtour</groupId>
-    <artifactId>vlibtour</artifactId>
+    <artifactId>vlibtour-FeretNathan-GuillemetSamuel</artifactId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>

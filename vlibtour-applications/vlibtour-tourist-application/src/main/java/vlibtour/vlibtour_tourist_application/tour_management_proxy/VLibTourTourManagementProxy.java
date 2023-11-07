@@ -21,10 +21,16 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tourist_application.tour_management_proxy;
 
-import javax.naming.NamingException;
+import java.util.List;
 
+import javax.naming.*;
+
+import vlibtour.vlibtour_common.GPSPosition;
+import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService;
+import vlibtour.vlibtour_tour_management_entity.POI;
 import vlibtour.vlibtour_tour_management_entity.Tour;
+import vlibtour.vlibtour_tour_management_entity.VlibTourTourManagementException;
 
 /**
  * The EJB Proxy (for clients) of the tour management server.
@@ -35,7 +41,6 @@ public final class VLibTourTourManagementProxy {
 	/**
 	 * the client access to the EJB stub for calling the tour management server.
 	 */
-	@SuppressWarnings("unused")
 	private VlibTourTourManagementService vlibtt;
 
 	/**
@@ -45,19 +50,69 @@ public final class VLibTourTourManagementProxy {
 	 *                         EJB skeleton using JNDI.
 	 */
 	public VLibTourTourManagementProxy() throws NamingException {
-		throw new UnsupportedOperationException("Not implemented, yet");
+		Context myContext = new InitialContext();
+		vlibtt = (VlibTourTourManagementService) myContext
+				.lookup("vlibtour.vlibtour_tour_management_api.VlibTourTourManagementService");
+
 	}
 
 	/**
-	 * find the tour by its identifier. Observe that the identifier for the search
-	 * is a string while the identifier in the database is an integer.
+	 * get the tour by its identifier. Observe that the identifier for the search
+	 * is a string corresponding to the name of the tour.
 	 * 
 	 * @param tourId the identifier of the tour.
 	 * @return the tour, as a sequence of POIs.
 	 */
-	public Tour findTour(final String tourId) {
-		throw new UnsupportedOperationException("Not implemented, yet");
+	public Tour getTour(final String tourId) {
+		return vlibtt.getTour(tourId);
 	}
-    
-    // TODO perhaps other methods
+
+	/**
+	 * 
+	 * @param tour
+	 * @return
+	 * @throws VlibTourTourManagementException
+	 */
+	public Tour createTour(Tour tour) throws VlibTourTourManagementException {
+		return vlibtt.createTour(tour);
+	}
+
+	/**
+	 * 
+	 * @param tourId
+	 * @param poiId
+	 * @throws VlibTourTourManagementException
+	 */
+	public void addPOItoTour(Long tourId, Long poiId) throws VlibTourTourManagementException {
+		vlibtt.addPOItoTour(tourId, poiId);
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @return POI
+	 */
+	public POI getPOI(String name) {
+		return vlibtt.getPOI(name);
+	}
+
+	/**
+	 * 
+	 * @return List of Tours
+	 */
+	public List<Tour> getListTours() {
+		return vlibtt.getListTours();
+	}
+
+	/**
+	 * @param tourId the identifier of the tour.
+	 * @return List of Postions of tour's POIs
+	 */
+	public List<Position> getPositionsOfTourPOIs(String tourId) {
+		Tour tour = vlibtt.getTour(tourId);
+		return tour.getPOIs().stream().map(poi -> new Position(poi.getName(),
+				new GPSPosition(poi.getLatitude(), poi.getLongitude()), poi.getDescription()))
+				.collect(java.util.stream.Collectors.toList());
+	}
+
 }

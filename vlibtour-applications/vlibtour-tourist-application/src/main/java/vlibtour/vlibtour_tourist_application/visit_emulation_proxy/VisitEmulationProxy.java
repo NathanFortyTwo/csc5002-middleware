@@ -25,12 +25,14 @@ import java.net.URI;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriBuilder;
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
+import vlibtour.vlibtour_visit_emulation_api.VisitEmulationTourInitRequest;
 
 /**
  * The REST Proxy (for clients) of the VLibTour Visit Emulation Server.
@@ -46,7 +48,7 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 		// init webtarget
 
 		this.client = ClientBuilder.newClient();
-		URI uri = UriBuilder.fromUri(ExampleOfAVisitWithTwoTourists.BASE_URI_WEB_SERVER).build();
+		URI uri = UriBuilder.fromUri(BASE_URI_WEB_SERVER).build();
 		this.service = client.target(uri);
 	}
 
@@ -106,6 +108,14 @@ public final class VisitEmulationProxy implements VisitEmulationService {
 		Position position = service
 				.path("visitemulation/stepsInVisit/" + user).request()
 				.accept(MediaType.APPLICATION_JSON).post(null).readEntity(Position.class);
+		return position;
+	}
+
+	public synchronized Position initATourForAGroup(VisitEmulationTourInitRequest body) {
+		Entity<VisitEmulationTourInitRequest> entity = Entity.entity(body, MediaType.APPLICATION_JSON);
+		Position position = service
+				.path("visitemulation/initATourForAGroup").request()
+				.accept(MediaType.APPLICATION_JSON).post(entity).readEntity(Position.class);
 		return position;
 	}
 

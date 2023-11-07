@@ -21,6 +21,18 @@ Contributor(s):
  */
 package vlibtour.vlibtour_tourist_application.group_communication_proxy;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeoutException;
+
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Consumer;
+
 /**
  * The AMQP/RabbitMQ Proxy (for clients) of the VLibTour Group Communication
  * System.
@@ -28,4 +40,62 @@ package vlibtour.vlibtour_tourist_application.group_communication_proxy;
  * @author Denis Conan
  */
 public class VLibTourGroupCommunicationSystemProxy {
+    private String topic;
+    private Connection connection;
+    private Channel channel;
+    private String userRoutingKey;
+    private Consumer consumer;
+    private String queueName;
+
+    public static String BROADCAST_POSITION = "all.position";
+
+    public VLibTourGroupCommunicationSystemProxy(final String topic, final String userRoutingKey, String uri)
+            throws IOException, TimeoutException, KeyManagementException, NoSuchAlgorithmException, URISyntaxException,
+            InterruptedException {
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setUri(uri);
+        while (connection == null) {
+            try {
+                connection = factory.newConnection();
+            } catch (IOException e) {
+                System.out.println(" [x] Cannot connect to the AMQP broker");
+                System.out.println(" [x] Retrying in 5 seconds");
+                Thread.sleep(5000);
+            }
+        }
+
+        connection = factory.newConnection();
+        channel = connection.createChannel();
+        channel.exchangeDeclare(topic, BuiltinExchangeType.TOPIC);
+        this.topic = topic;
+        this.userRoutingKey = userRoutingKey;
+    }
+
+    public void publish(final String message, final String specificRoutingKey) throws IOException {
+        /**
+         * specificRoutingKey could be either "all.position" or "userId.sms"
+         */
+        channel.basicPublish(topic, userRoutingKey + "." + specificRoutingKey, null, message.getBytes());
+    }
+
+    public void close() throws IOException, TimeoutException {
+        channel.close();
+        connection.close();
+    }
+
+    public void setConsumer(Consumer consumer) throws IOException {
+        this.queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, topic, "*.all.#");
+        channel.queueBind(queueName, topic, "*." + userRoutingKey + ".#"); // SMS for example
+        this.consumer = consumer;
+    }
+
+    public void startConsuming() throws IOException {
+        channel.basicConsume(queueName, true, consumer);
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
 }

@@ -19,18 +19,20 @@ Initial developer(s): Denis Conan
 Contributor(s):
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>eu.telecomsudparis.vlibtour</groupId>
-    <artifactId>vlibtour</artifactId>
+    <artifactId>vlibtour-FeretNathan-GuillemetSamuel</artifactId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>vlibtour-tourist-application</artifactId>
   <name>vlibtour-tourist-application: the VLibTour tourist application with the scenario of the demonstration</name>
   <packaging>jar</packaging>
-  
+
   <dependencies>
     <!-- visit common -->
     <dependency>
@@ -48,14 +50,14 @@ Contributor(s):
       <groupId>eu.telecomsudparis.vlibtour.vlibtour-tour-management-system</groupId>
       <artifactId>vlibtour-tour-management-api</artifactId>
       <version>1.0-SNAPSHOT</version>
-    </dependency> 
-    
+    </dependency>
+
     <dependency>
       <groupId>eu.telecomsudparis.vlibtour.vlibtour-visit-emulation-system</groupId>
       <artifactId>vlibtour-visit-emulation-server</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    
+
     <dependency>
       <groupId>jakarta.platform</groupId>
       <artifactId>jakarta.jakartaee-api</artifactId>
@@ -63,7 +65,7 @@ Contributor(s):
 	   https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
       -->
       <scope>provided</scope>
-    </dependency>      
+    </dependency>
     <!-- Running EJB lookup operations in a standalone client requires
 	 GlassFish client jar -->
     <dependency>
@@ -150,44 +152,44 @@ Contributor(s):
   <build>
     <plugins>
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>exec-maven-plugin</artifactId>
-	<version>1.4.0</version>
-	<executions>
-	  <execution>
-	    <id>map</id>
-	    <goals>
-	      <goal>java</goal>
-	    </goals>
-	    <configuration>
-	      <mainClass>vlibtour.vlibtour_scenario.map_viewer.MapDemo</mainClass>
-	    </configuration>
-	  </execution>
-	  <execution>
-	    <id>touristapplijoe</id>
-	    <goals>
-	      <goal>java</goal>
-	    </goals>
-	    <configuration>
-	      <mainClass>vlibtour.vlibtour_scenario.VLibTourVisitTouristApplication</mainClass>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <executions>
+          <execution>
+            <id>map</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>vlibtour.vlibtour_scenario.map_viewer.MapDemo</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>touristapplijoe</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>vlibtour.vlibtour_scenario.VLibTourVisitTouristApplication</mainClass>
               <arguments>
                 <argument>Joe</argument>
               </arguments>
-	    </configuration>
-	  </execution>
-	  <execution>
-	    <id>touristappliavrel</id>
-	    <goals>
-	      <goal>java</goal>
-	    </goals>
-	    <configuration>
-	      <mainClass>vlibtour.vlibtour_scenario.VLibTourVisitTouristApplication</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>touristappliavrel</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>vlibtour.vlibtour_scenario.VLibTourVisitTouristApplication</mainClass>
               <arguments>
                 <argument>Avrel</argument>
               </arguments>
-	    </configuration>
-	  </execution>
-	</executions>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

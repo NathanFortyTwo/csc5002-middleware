@@ -21,6 +21,7 @@ Contributor(s):
  */
 package vlibtour.vlibtour_visit_emulation_api;
 
+import vlibtour.vlibtour_common.GPSPosition;
 import vlibtour.vlibtour_common.Position;
 
 /**
@@ -29,6 +30,10 @@ import vlibtour.vlibtour_common.Position;
  * @author Denis Conan
  */
 public interface VisitEmulationService {
+	public static Position DEFAULT_DEPARTURE_POSITION = new Position("Elysée",
+			new GPSPosition(48.870081157416955, 2.3165105054638717));
+	public static final String BASE_URI_WEB_SERVER = "http://localhost:8888/VisitEmulation/";
+
 	/**
 	 * gets the current position.
 	 * 
@@ -62,4 +67,12 @@ public interface VisitEmulationService {
 	 * @return the next position.
 	 */
 	Position stepsInVisit(String user);
+
+	/**
+	 * Initialize a tour for a given user and a list of POIs.
+	 * 
+	 * @param request the request.
+	 */
+	Position initATourForAGroup(VisitEmulationTourInitRequest request);
+
 }

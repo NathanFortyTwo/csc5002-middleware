@@ -63,7 +63,7 @@ fi
 # (cd ./vlibtour-applications/vlibtour-tour-management-admin-client; ./start_tour_management_admin_client.sh populate toursAndPOIs)
 # sleep 1
 # # start the rabbitmq server
-# if netstat -nlp 2> /dev/null | grep -q "5672"; then
+# if docker ps -a 2>/dev/null | grep -q "rabbitmq"; then
 #     docker stop rabbitmq
 #     docker rm rabbitmq
 # fi
@@ -91,7 +91,10 @@ if [ -n "$procNumber" ]; then
     echo "There is an old visit emulation server running; remove proc $procNumber"
     kill -9 "$procNumber"
 fi
-(cd ./vlibtour-microservices/vlibtour-visit-emulation-system/vlibtour-visit-emulation-server; ./start_visit_emulation_server.sh Dalton ParisBigTour)
+(
+    cd ./vlibtour-microservices/vlibtour-visit-emulation-system/vlibtour-visit-emulation-server
+    ./start_visit_emulation_server.sh Dalton ParisBigTour
+)
 # pid to kill at the end in ~/.vlibtour/visit_emulation_server
 sleep 3
 
@@ -100,7 +103,10 @@ echo -e "\e[1;44m  \e[1;33m =            Start the tourist applications         
 echo -e "\e[1;44m  \e[1;33m ========================================================== \e[0m "
 # start the tourist applications
 # USAGE: userId (either Joe or Avrel) mode (initiate or join) tourId visitAlias (for the group)
-(cd vlibtour-applications/vlibtour-tourist-application; ./start_tourist_application_w_emulated_location.sh Avrel initiate ParisBigTour Dalton)
+(
+    cd vlibtour-applications/vlibtour-tourist-application
+    ./start_tourist_application_w_emulated_location.sh Avrel initiate ParisBigTour Dalton
+)
 # pid to kill at the end in ~/.vlibtour/tourist_applications
 # sleep 1
 # (cd vlibtour-applications/vlibtour-tourist-application; ./start_tourist_application_w_emulated_location.sh Joe join ParisBigTour Dalton)
@@ -120,7 +126,7 @@ while read pid; do
     if [ $(ps aux | grep -c $pid) -gt 1 ]; then
         kill -9 $pid
     fi
-done < ~/.vlibtour/tourist_applications
+done <~/.vlibtour/tourist_applications
 # echo -e "\e[1;44m  \e[1;33m ========================================================== \e[0m "
 # echo -e "\e[1;44m  \e[1;33m =               Stop the lobby room server               = \e[0m "
 # echo -e "\e[1;44m  \e[1;33m ========================================================== \e[0m "

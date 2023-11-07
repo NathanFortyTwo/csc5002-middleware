@@ -38,21 +38,23 @@ import vlibtour.vlibtour_common.Position;
 
 class TestDepthFirstSearch {
 	private Map<Position, Set<Position>> adjacencySets = new HashMap<>();
+	private static GraphOfPositionsForEmulation graph;
 
 	private static Map<Position, Set<Position>> addEdge(final Map<Position, Set<Position>> adjacencyList,
 			final int departure, final int destination) {
-		return GraphOfPositionsForEmulation.addEdge(adjacencyList, new Position(String.valueOf(departure), null),
+		return graph.addEdge(adjacencyList, new Position(String.valueOf(departure), null),
 				new Position(String.valueOf(destination), null));
 	}
 
 	private static Map<Position, Set<Position>> addEdge(final Map<Position, Set<Position>> adjacencyList,
 			final String departure, final String destination) {
-		return GraphOfPositionsForEmulation.addEdge(adjacencyList, new Position(departure, null),
+		return graph.addEdge(adjacencyList, new Position(departure, null),
 				new Position(destination, null));
 	}
 
 	@BeforeEach
 	void setUp() {
+		graph = new GraphOfPositionsForEmulation();
 		addEdge(adjacencySets, 1, 6);
 		addEdge(adjacencySets, 6, 9);
 		addEdge(adjacencySets, 9, 12);
@@ -112,20 +114,20 @@ class TestDepthFirstSearch {
 	@Test
 	void testNoPathFromUnknownDeparture() {
 		Assertions.assertThrows(IllegalArgumentException.class,
-				() -> GraphOfPositionsForEmulation.computePathsFromDepartureToDestination(adjacencySets,
+				() -> graph.computePathsFromDepartureToDestination(adjacencySets,
 						new Position(String.valueOf(0), null), new Position(String.valueOf(46), null)));
 	}
 
 	@Test
 	void testNoPathToUnknownDestination() {
 		Assertions.assertThrows(IllegalArgumentException.class,
-				() -> GraphOfPositionsForEmulation.computePathsFromDepartureToDestination(adjacencySets,
+				() -> graph.computePathsFromDepartureToDestination(adjacencySets,
 						new Position(String.valueOf(1), null), new Position(String.valueOf(100), null)));
 	}
 
 	@Test
 	void testOnePathWithoutAnyCycle() {
-		List<List<Position>> pathsFromDepartureToDestination = GraphOfPositionsForEmulation
+		List<List<Position>> pathsFromDepartureToDestination = graph
 				.computePathsFromDepartureToDestination(adjacencySets, new Position(String.valueOf(21), null),
 						new Position(String.valueOf(43), null));
 		Assertions.assertNotNull(pathsFromDepartureToDestination);
@@ -135,7 +137,7 @@ class TestDepthFirstSearch {
 
 	@Test
 	void testOnePathWithoutAnyCycle2() {
-		List<List<Position>> pathsFromDepartureToDestination = GraphOfPositionsForEmulation
+		List<List<Position>> pathsFromDepartureToDestination = graph
 				.computePathsFromDepartureToDestination(adjacencySets, new Position(String.valueOf(2), null),
 						ExampleOfAVisitWithTwoTourists.POSITION4);
 		Assertions.assertNotNull(pathsFromDepartureToDestination);
@@ -145,7 +147,7 @@ class TestDepthFirstSearch {
 
 	@Test
 	void testOnePathWithACycle() {
-		List<List<Position>> pathsFromDepartureToDestination = GraphOfPositionsForEmulation
+		List<List<Position>> pathsFromDepartureToDestination = graph
 				.computePathsFromDepartureToDestination(adjacencySets, new Position(String.valueOf(33), null),
 						new Position(String.valueOf(46), null));
 		Assertions.assertNotNull(pathsFromDepartureToDestination);
@@ -155,7 +157,7 @@ class TestDepthFirstSearch {
 
 	@Test
 	void testTwoPathsWithACycle() {
-		List<List<Position>> pathsFromDepartureToDestination = GraphOfPositionsForEmulation
+		List<List<Position>> pathsFromDepartureToDestination = graph
 				.computePathsFromDepartureToDestination(adjacencySets, new Position(String.valueOf(26), null),
 						new Position(String.valueOf(46), null));
 		Assertions.assertNotNull(pathsFromDepartureToDestination);
@@ -170,7 +172,7 @@ class TestDepthFirstSearch {
 
 	@Test
 	void testManyPathsWithACycle() {
-		List<List<Position>> pathsFromDepartureToDestination = GraphOfPositionsForEmulation
+		List<List<Position>> pathsFromDepartureToDestination = graph
 				.computePathsFromDepartureToDestination(adjacencySets, new Position(String.valueOf(2), null),
 						new Position(String.valueOf(46), null));
 		Assertions.assertNotNull(pathsFromDepartureToDestination);
@@ -179,7 +181,7 @@ class TestDepthFirstSearch {
 
 	@Test
 	void testManyPathsWithACycle2() {
-		List<List<Position>> pathsFromDepartureToDestination = GraphOfPositionsForEmulation
+		List<List<Position>> pathsFromDepartureToDestination = graph
 				.computePathsFromDepartureToDestination(adjacencySets, ExampleOfAVisitWithTwoTourists.POSITION4,
 						ExampleOfAVisitWithTwoTourists.POSITION19);
 		Assertions.assertNotNull(pathsFromDepartureToDestination);

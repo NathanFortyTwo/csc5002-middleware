@@ -72,21 +72,21 @@ public final class GraphOfPositionsForEmulation {
 	 * the graph of positions used for the emulation of the visit in scenarios. The
 	 * graph is defined has a set of adjacency sets, one per node (position).
 	 */
-	private static Map<Position, Set<Position>> adjacencySets = new HashMap<>();
+	private Map<Position, Set<Position>> adjacencySets = new HashMap<>();
 	/**
 	 * the current paths of the users.
 	 */
-	private static final Map<String, List<Position>> currentPaths = new HashMap<>();
+	private final Map<String, List<Position>> currentPaths = new HashMap<>();
 	/**
 	 * the current positions of the users for which the emulator provides these
 	 * utility methods.
 	 */
-	private static final Map<String, Position> currentPositionOfUsers = new HashMap<>();
+	private final Map<String, Position> currentPositionOfUsers = new HashMap<>();
 
 	/**
 	 * private constructor of the utility class.
 	 */
-	private GraphOfPositionsForEmulation() {
+	public GraphOfPositionsForEmulation() {
 	}
 
 	/**
@@ -97,7 +97,7 @@ public final class GraphOfPositionsForEmulation {
 	 * @param user the identifier of the user.
 	 * @return the position of the current POI.
 	 */
-	static synchronized Position getNextPOIPosition(final String user) {
+	synchronized Position getNextPOIPosition(final String user) {
 		if (currentPaths.get(user) == null) {
 			throw new IllegalArgumentException("user " + user + " has no current path set (visit not started)");
 		}
@@ -110,7 +110,7 @@ public final class GraphOfPositionsForEmulation {
 	 * @param user the identifier of the user.
 	 * @return the current position of the user.
 	 */
-	static synchronized Position getCurrentPosition(final String user) {
+	synchronized Position getCurrentPosition(final String user) {
 		return currentPositionOfUsers.get(user);
 	}
 
@@ -122,7 +122,7 @@ public final class GraphOfPositionsForEmulation {
 	 * @return the new position of the user, or the same if the end of the path is
 	 *         already reached.
 	 */
-	static synchronized Position stepInCurrentPath(final String user) {
+	synchronized Position stepInCurrentPath(final String user) {
 		if (adjacencySets == null || adjacencySets.isEmpty()) {
 			throw new IllegalStateException("There is no graph of positions");
 		}
@@ -151,7 +151,7 @@ public final class GraphOfPositionsForEmulation {
 	 * @param destination   the destination position.
 	 * @return the new network that is updated with the new edge.
 	 */
-	static Map<Position, Set<Position>> addEdge(final Map<Position, Set<Position>> adjacencySets,
+	Map<Position, Set<Position>> addEdge(final Map<Position, Set<Position>> adjacencySets,
 			final Position departure, final Position destination) {
 		Map<Position, Set<Position>> result = null;
 		if (adjacencySets == null) {
@@ -180,7 +180,7 @@ public final class GraphOfPositionsForEmulation {
 	 * @param destination   the destination node.
 	 * @return the list of paths, which are lists of nodes.
 	 */
-	static <T> List<List<T>> computePathsFromDepartureToDestination(final Map<T, Set<T>> adjacencySets,
+	<T> List<List<T>> computePathsFromDepartureToDestination(final Map<T, Set<T>> adjacencySets,
 			final T departure, final T destination) {
 		Map<T, Boolean> visited = new HashMap<>();
 		List<T> path = new ArrayList<>();
@@ -188,7 +188,9 @@ public final class GraphOfPositionsForEmulation {
 			throw new IllegalArgumentException("departure position not in the network (" + departure + ")");
 		}
 		if (adjacencySets.get(destination) == null) {
+			System.out.println(adjacencySets);
 			throw new IllegalArgumentException("destination position not in the network (" + destination + ")");
+
 		}
 		return depthFirstSearchRecursive(adjacencySets, visited, departure, destination, path, null);
 	}
@@ -209,7 +211,7 @@ public final class GraphOfPositionsForEmulation {
 	 *                                  paths from departure to node.
 	 * @return the accumulated list of (complete) paths.
 	 */
-	private static <T> List<List<T>> depthFirstSearchRecursive(final Map<T, Set<T>> adjacencySets,
+	private <T> List<List<T>> depthFirstSearchRecursive(final Map<T, Set<T>> adjacencySets,
 			final Map<T, Boolean> visited, final T departure, final T destination,
 			final List<T> currentPathInConstruction, final List<List<T>> accumulatedPaths) {
 		if (currentPathInConstruction == null) {
@@ -246,7 +248,7 @@ public final class GraphOfPositionsForEmulation {
 	 * 
 	 * @return the graph as the set of adjacency lists.
 	 */
-	static synchronized Map<Position, Set<Position>> getAdjacencySets() {
+	synchronized Map<Position, Set<Position>> getAdjacencySets() {
 		return adjacencySets;
 	}
 
@@ -255,7 +257,7 @@ public final class GraphOfPositionsForEmulation {
 	 * 
 	 * @param adjSets the graph as the set of adjacency lists.
 	 */
-	static synchronized void setAdjacencySets(final Map<Position, Set<Position>> adjSets) {
+	synchronized void setAdjacencySets(final Map<Position, Set<Position>> adjSets) {
 		adjacencySets = adjSets;
 	}
 
@@ -267,15 +269,15 @@ public final class GraphOfPositionsForEmulation {
 	 * @param user        the identifier of the user.
 	 * @param destination the destination position.
 	 */
-	static synchronized void setAPathTo(final String user, final Position destination) {
+	synchronized void setAPathTo(final String user, final Position destination) {
 		if (destination == null) {
 			throw new IllegalArgumentException("destination position cannot be null");
 		}
 		if (currentPositionOfUsers.get(user) == null) {
 			throw new IllegalArgumentException("user " + user + " has no current position set");
 		}
-		List<List<Position>> possiblePaths = GraphOfPositionsForEmulation
-				.computePathsFromDepartureToDestination(adjacencySets, currentPositionOfUsers.get(user), destination);
+		List<List<Position>> possiblePaths = computePathsFromDepartureToDestination(adjacencySets,
+				currentPositionOfUsers.get(user), destination);
 		EMULATION.debug("{}",
 				() -> user + ": possible paths to the next POI = "
 						+ possiblePaths.stream()
@@ -295,7 +297,7 @@ public final class GraphOfPositionsForEmulation {
 	 * @param user     the identifier of the user.
 	 * @param position the starting position.
 	 */
-	static synchronized void setStartingPosition(final String user, final Position position) {
+	synchronized void setStartingPosition(final String user, final Position position) {
 		if (currentPositionOfUsers.get(user) != null) {
 			throw new IllegalStateException("user " + user + " already has a starting position");
 		}
