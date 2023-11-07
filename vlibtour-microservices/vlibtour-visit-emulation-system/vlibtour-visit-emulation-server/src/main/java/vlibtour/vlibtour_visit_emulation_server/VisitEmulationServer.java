@@ -41,7 +41,6 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.GPSPosition;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
