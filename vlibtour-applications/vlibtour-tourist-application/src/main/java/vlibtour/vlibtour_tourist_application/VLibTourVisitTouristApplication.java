@@ -29,14 +29,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -46,7 +43,6 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.tools.jsonrpc.JsonRpcException;
 
 import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
-import vlibtour.vlibtour_common.GPSPosition;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_lobby_room_api.InAMQPPartException;
 import vlibtour.vlibtour_lobby_room_api.VLibTourLobbyService;
@@ -99,6 +95,7 @@ public class VLibTourVisitTouristApplication {
 	/**
 	 * the user identifier of the tourist application.
 	 */
+	@SuppressWarnings("unused")
 	private String userId;
 	/**
 	 * delegation to the proxy of type
@@ -202,6 +199,9 @@ public class VLibTourVisitTouristApplication {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+				} else {
+					throw new IllegalStateException("The routing key " + envelope.getRoutingKey()
+							+ " is not handled by the tourist application");
 				}
 			}
 		};

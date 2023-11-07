@@ -30,19 +30,16 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.logging.log4j.core.util.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
 import com.rabbitmq.tools.jsonrpc.JsonRpcException;
 
 import vlibtour.vlibtour_lobby_room_api.InAMQPPartException;
-import vlibtour.vlibtour_tourist_application.group_communication_proxy.VLibTourGroupCommunicationSystemProxy;
 import vlibtour.vlibtour_tourist_application.lobby_room_proxy.VLibTourLobbyRoomProxy;
 
 class VLibTourLobbyRoomProxyIT {

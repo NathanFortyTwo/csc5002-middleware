@@ -23,7 +23,6 @@ Contributor(s):
 package vlibtour.vlibtour_visit_emulation_proxy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

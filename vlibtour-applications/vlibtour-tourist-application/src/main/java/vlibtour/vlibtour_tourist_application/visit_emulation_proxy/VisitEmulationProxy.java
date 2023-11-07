@@ -29,7 +29,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriBuilder;
-import vlibtour.vlibtour_common.ExampleOfAVisitWithTwoTourists;
 import vlibtour.vlibtour_common.Position;
 import vlibtour.vlibtour_visit_emulation_api.VisitEmulationService;
 import vlibtour.vlibtour_visit_emulation_api.VisitEmulationTourInitRequest;
