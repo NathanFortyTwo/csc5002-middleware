@@ -1,0 +1,32 @@
+@startuml POI_Class_Diagram
+
+
+class POI << (E,orchid) Entity >> {
+    -id: Long <<PK>>
+    -name: String
+    -description: String
+    -latitude: double
+    -longitude: double
+
+    + {static} FIND_ALL: String
+    + {static} FIND_BY_ID: String
+    + {static} FIND_BY_NAME: String
+
+    +POI()
+    +POI(name: String, description: String, latitude: double, longitude: double)
+    
+    +getId(): Long
+    +getName(): String
+    +setName(name: String): void
+    +getDescription(): String
+    +setDescription(description: String): void
+    +getLatitude(): double
+    +setLatitude(latitude: double): void
+    +getLongitude(): double
+    +setLongitude(longitude: double): void
+
+    +toString(): String
+    +equals(o: Object): boolean
+}
+
+@enduml

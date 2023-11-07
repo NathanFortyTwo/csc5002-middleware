@@ -1,0 +1,56 @@
+@startuml VlibTourTourManagementSystem_Diagram
+
+hide empty members
+
+skinparam Linetype polyline
+
+interface VlibTourTourManagementService {
+    +createTour(tour: Tour): Tour
+    +createPoi(poi: POI): POI
+    +addPOItoTour(tourId: Long, poiId: Long): void
+    +getTour(name: String): Tour
+    +getPOI(POIName: String): POI
+    +getListTours(): List<Tour>
+}
+
+class VlibTourTourManagementBean <<EJB>> {
+    -em: EntityManager
+    +createTour(tour: Tour): Tour
+    +createPoi(poi: POI): POI
+    +addPOItoTour(tourId: Long, poiId: Long): void
+    +getTour(name: String): Tour
+    +getPOI(name: String): POI
+    +getListTours(): List<Tour>
+}
+
+class VLibTourTourManagementProxy <<Client side>> {
+    -vlibtt: VlibTourTourManagementService
+    +VLibTourTourManagementProxy() throws NamingException
+    +getTour(tourId: String): Tour
+    +createTour(tour: Tour): Tour
+    +addPOItoTour(tourId: Long, poiId: Long): void
+    +getPOI(name: String): POI
+    +getListTours(): List<Tour*
+    +getPositionsOfTourPOIs(tourId: String): List<Position>
+}
+
+
+VlibTourTourManagementBean --|> VlibTourTourManagementService: Implements
+VLibTourTourManagementProxy --* VlibTourTourManagementService: Uses
+
+note on link
+    JNDI to lookup the VlibTourTourManagementService
+end note
+
+
+note top of VLibTourTourManagementProxy
+    The VlibTourTourManagementProxy is a client side proxy,
+    for the VlibTourTourManagementService.
+end note
+
+note top of VlibTourTourManagementBean
+    The VlibTourTourManagementBean is a stateless session bean,
+    which implements the VlibTourTourManagementService.
+end note
+
+@enduml

@@ -1,0 +1,63 @@
+@startuml VisitEmulationCompleteDiagram
+
+hide empty members
+
+skinparam Linetype polyline
+
+interface VisitEmulationService {
+    +DEFAULT_DEPARTURE_POSITION: Position
+    +BASE_URI_WEB_SERVER: String
+    +getCurrentPosition(user: String): Position
+    +getNextPOIPosition(user: String): Position
+    +stepInCurrentPath(user: String): Position
+    +stepsInVisit(user: String): Position
+    +initATourForAGroup(request: VisitEmulationTourInitRequest): void
+}
+
+class VisitEmulationServer <<REST Server>> {
+    -visitEmulationTourInfo: Map<String, VisitEmulationTourInfo>
+    -userIdToTourId: Map<String, String>
+    +VisitEmulationServer()
+    +main(args: String[]): void
+    +initATourForAGroup(request: VisitEmulationTourInitRequest): Position
+    +static initTourWithPOIs(graphOfPositionsForEmulation: GraphOfPositionsForEmulation): Map<Position, Set<Position>>
+    +getUserGraphOfPositionsForEmulation(userId: String): GraphOfPositionsForEmulation
+    +getNextPOIPosition(user: String): Position
+    +getCurrentPosition(user: String): Position
+    +stepInCurrentPath(user: String): Position
+    +stepsInVisit(user: String): Position
+}
+
+class VisitEmulationProxy <<Client side>> {
+    -service: WebTarget
+    -client: Client
+    +VisitEmulationProxy()
+    +getNextPOIPosition(user: String): Position
+    +getCurrentPosition(user: String): Position
+    +stepInCurrentPath(user: String): Position
+    +stepsInVisit(user: String): Position
+    +initATourForAGroup(body: VisitEmulationTourInitRequest): Position
+    +close(): void
+}
+
+
+VisitEmulationServer --|> VisitEmulationService  : Implements
+VisitEmulationProxy --|> VisitEmulationService: Implements
+
+note on link
+    Acting as a client-side proxy for interacting with the
+    VisitEmulationServer via RESTful calls.
+end note
+
+note top of VisitEmulationServer
+    The VisitEmulationServer class serves as the REST server
+    for the VisitEmulationService and provides the implementation
+    for the specified methods and endpoints.
+end note
+
+note top of VisitEmulationProxy
+    The VisitEmulationProxy class acts as a client-side proxy
+    for interacting with the VisitEmulationService via RESTful calls.
+end note
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml Tour_Class_Diagram
+
+class Tour << (E,orchid) Entity >> {
+    -id: Long <<PK>>
+    -name: String
+    -description: String
+    -POIs: List<POI>
+
+    + {static} FIND_ALL: String
+    + {static} FIND_BY_ID: String
+    + {static} FIND_BY_NAME: String
+
+    +Tour()
+    +Tour(name: String, description: String)
+
+    +getId(): Long
+    +getName(): String
+    +setName(name: String): void
+    +getDescription(): String
+    +setDescription(description: String): void
+    +getPOIs(): List<POI>
+    +addPOI(poi: POI): void
+
+    +toString(): String
+    +equals(o: Object): boolean
+}
+
+@enduml

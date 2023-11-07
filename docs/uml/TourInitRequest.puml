@@ -1,0 +1,17 @@
+@startuml VisitEmulationTourInitRequest
+
+class VisitEmulationTourInitRequest {
+    -tourId: String
+    -userId: String
+    -POIs: List<Position>
+    +VisitEmulationTourInitRequest(tourId: String, userId: String, POIs: List<Position>)
+    
+    +getTourId(): String
+    +setTourId(tourId: String): void
+    +getUserId(): String
+    +setUserId(userId: String): void
+    +getPOIs(): List<Position>
+    +setPOIs(POIs: List<Position>): void
+}
+
+@enduml

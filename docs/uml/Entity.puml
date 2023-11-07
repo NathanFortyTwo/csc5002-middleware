@@ -1,0 +1,26 @@
+@startuml Entity Relationship Diagram
+
+left to right direction
+
+class Tour << (E,orchid) Entity >> {
+    -id: Long <<PK>>
+    -name: String
+    -description: String
+    -POIs: List<POI>
+
+    +Tour()
+}
+
+class POI << (E,orchid) Entity >> {
+    -id: Long <<PK>>
+    -name: String
+    -description: String
+    -latitude: double
+    -longitude: double
+
+    +POI()
+}
+
+Tour "*" o--> "1..*" POI: Contains
+
+@enduml

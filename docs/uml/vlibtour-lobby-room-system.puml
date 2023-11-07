@@ -1,0 +1,56 @@
+@startuml VLibTourLobbyService_Diagram
+
+hide empty members
+
+skinparam Linetype polyline
+
+title VLibTourLobbyService
+
+interface VLibTourLobbyService {
+    {static} GROUP_TOUR_USER_DELIMITER: String
+    {static} EXCHANGE_NAME: String
+    {static} BINDING_KEY: String
+    +createGCSAndJoinIt(gcsId: String, userId: String): String
+    +joinAGroup(gcsId: String, userId: String): String
+}
+
+class VLibTourLobbyServer <<Server side>> {
+    - {static} HOST: String
+    -connection: Connection
+    -channel: Channel
+    -rpcServer: JsonRpcServer
+    +VLibTourLobbyServer()
+    +createGCS(gcsId: String): void
+    +createGCSAndJoinIt(gcsId: String, userId: String): String
+    +generatePassword(): String
+    +joinAGroup(groupId: String, userId: String): String
+    +run(): void
+    +close(): void
+}
+
+class VLibTourLobbyRoomProxy <<Client side>> {
+    -connection: Connection
+    -channel: Channel
+    -jsonRpcClient: JsonRpcClient
+    +service: VLibTourLobbyService
+    +VLibTourLobbyRoomProxy()
+    +close(): void
+}
+
+VLibTourLobbyServer --|> VLibTourLobbyService : Implements
+VLibTourLobbyRoomProxy --* VLibTourLobbyService : Uses
+note on link #LightBlue
+    JsonRpc over AMQP (RabbitMQ) 
+    to communicate with the server.
+end note
+
+note top of VLibTourLobbyServer
+    This class uses the JsonRpcServer to handle the requests.
+    Performs rabbitmqctl commands to create the exchanges and queues.
+end note
+
+note top of VLibTourLobbyRoomProxy
+    This class uses the JsonRpcClient to send the requests.
+end note
+
+@enduml
